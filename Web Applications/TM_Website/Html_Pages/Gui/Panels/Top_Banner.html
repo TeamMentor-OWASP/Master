@@ -1,9 +1,31 @@
 <script>
-	$(function()
-		{						
-		});
-</script>
+	$(function ()
+	{
+		$(".HeaderImage").absolute().height(50).top(5).left(5);
+		$("#forkMe").appendTo("body").children().zIndex(1000);
+		//$("#customText").absolute().top(10).left(440).right(350)
+		$("#customText").absolute().top(0).css("overflow","auto");
+		$("#textBox").css('border','0px solid').absolute().top(10).left(290).right(350).height(60)
+	});
 
-<div id="header">			
-	<a href="#"><img src="/Images/HeaderImage.jpg" alt="TeamMentor Enterprise Edition" class="HeaderImage"/></a>		
+</script>
+<div id="_header">
+	<a href="#">
+		<img src="https://www.owasp.org//skins/monobook/ologo.png" class="HeaderImage" /></a>	
 </div>
+<div id="textBox">
+	<div id="customText">This is an Open and Free Library focused on the 
+			<a href="https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project">OWASP Top 10</a> containing 244 Guidance Items covering the OWASP Top 10&#39;s Web Application Security Risks for 2010. Both the 
+			<a href="https://github.com/TeamMentor/OWASP_Library">XML files</a> 
+		(CC License) and
+		<a href="https://github.com/TeamMentor-OWASP/Master">this 
+		web application</a> (non-commercial license) are available on GitHub
+		<br />To edit the content login as owasp:owasp</div>
+</div>
+
+<a href="https://github.com/TeamMentor-OWASP/Master" id="forkMe">
+	<img style="position: absolute; top: 0; right: 0; border: 0;" 
+		 src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
+		 alt="Fork me on GitHub" />
+</a>
+
