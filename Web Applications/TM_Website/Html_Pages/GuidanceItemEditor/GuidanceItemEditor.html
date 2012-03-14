@@ -3,6 +3,12 @@
 	<head>			
 		<link  href="/aspx_Pages/scriptCombiner.ashx?s=HomePage_CSS&ct=css" 				type="text/css" rel="stylesheet" /> 					
 		<script src="/aspx_Pages/scriptCombiner.ashx?s=WebServices_JS"						type="text/javascript"></script>			
+	    <style type="text/css">
+            #TechnologyValue
+            {
+                width: 32px;
+            }
+        </style>
 	</head>
 	<body>	
 		<script>		
@@ -456,7 +462,32 @@
 			});	
 				
 		
-	</script>	
+"ItemTitle".$().css('width', '100%');
+				$(".ui-autocomplete-input").width(140) ;
+				$(".ItemDetailTable").width(750)				
+
+			});
+			
+		$(window).bind('hashchange', setGuidanceIdfromUrlHash);
+		
+		$('a').live('click',function () 
+			{ 
+				var href = $(this).attr('href');
+				if(isDefined(href))
+				{
+					window.location.hash = href;                  					
+					return href.slice(0,11)!="id";
+				}
+				return true;
+			});	
+				
+		
+	function TechnologyValue_onclick() 
+    {
+        
+       
+    }
+</script>	
 	
 		<div id="ScriptLoader"> </div>
 		<div id="guiWithPanels"></div>	
@@ -494,7 +525,7 @@
 			</tr>
 			<tr>
 				<td class="ItemDetailHeader">					
-					<select class="combobox" id="TechnologyValue">					
+					<select class="combobox" id="TechnologyValue" onclick="return TechnologyValue_onclick()">					
 					</select>
 					<!--<input type=text ID="TechnologyLabel"> </input>-->
 				</td>								

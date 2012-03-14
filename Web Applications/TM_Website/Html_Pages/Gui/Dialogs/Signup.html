@@ -1,17 +1,40 @@
+
+<!-- Anitha CSFR protection for the web services/web login pages-->
+<?php include("csfr.php"); ?>
+<?php
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    //Here we parse the form
+    if(!isset($_SESSION['csrf']) || $_SESSION['csrf'] !== $_POST['csrf'])
+        throw new RuntimeException('CSRF attack');
+ 
+    //Do the rest of the processing here
+}
+ 
+//Generate a key, print a form:
+$key = sha1(microtime());
+$_SESSION['csrf'] = $key;
+?>
 <script>
 
-	function signupResult(data)
-	{			
-		if (data.d == 0)
-		{
-			jQuery('#signupMessage').html("<h2>Failed to create user, please try again</h2>").css('color','red');
-			jQuery('#signupContent').show();
-		}
-		else
-		{
-			jQuery('#signupMessage').html("<h2>Account created successfully</h2>").css('color','black');
-			jQuery('#signupMessage').append("Please <a href='#' onclick='javascript:TM.Gui.Dialog.loginPage()'>Login</a> ");
-		}
+	function signupResult(data) {
+    //Anitha
+	    if (data.d == 0) {
+	        jQuery('#signupMessage').html("<h2>Failed to create user, please try again</h2>").css('color', 'red');
+	        jQuery('#signupContent').show();
+	    }
+	    else if (data.d == -1) {
+	        jQuery('#signupMessage').html("<h2>Password entry is missing.</h2>").css('color', 'red');
+	        jQuery('#signupContent').show();
+	    }
+	    else if (data.d == -2) {
+	        jQuery('#signupMessage').html("<h2>Password needs to be strong, please try again</h2>").css('color', 'red');
+	        jQuery('#signupContent').show();
+	    }
+	    else {
+	        jQuery('#signupMessage').html("<h2>Account created successfully</h2>").css('color', 'black');
+	        jQuery('#signupMessage').append("Please <a href='#' onclick='javascript:TM.Gui.Dialog.loginPage()'>Login</a> ");
+	    }
 	}
 	
 	function submitForm_Signup()
@@ -21,8 +44,11 @@
 		jQuery('#signupMessage').html('<h2>Creating user</h2> Please wait...').css('color','black');
 		var username = jQuery('#ctl00_ContentPlaceHolder1_UsernameBox').attr('value');
 		var password = jQuery('#ctl00_ContentPlaceHolder1_PasswordBox').attr('value');
-		var passwordHash = SHA256(username+ password);
-		var email = jQuery('#ctl00_ContentPlaceHolder1_EmailBox').attr('value');
+
+		var passwordHash = password;
+        // var passwordHash = SHA256(username + password);
+
+        var email = jQuery('#ctl00_ContentPlaceHolder1_EmailBox').attr('value');
 		var firstName = jQuery('#ctl00_ContentPlaceHolder1_FNameBox').attr('value');
 		var lastName = jQuery('#ctl00_ContentPlaceHolder1_LNameBox').attr('value');
 /*		jQuery('#signupMessage').append("username: " + username + "</br>" +
@@ -206,6 +232,7 @@
 					<td>
 
 						<input name="ctl00$ContentPlaceHolder1$LNameBox" type="text" id="ctl00_ContentPlaceHolder1_LNameBox" class="otherTextBox" style="width:350px;" />
+<input type="hidden" name="csrf" value="<?php echo $key; ?>" />
 
 					</td>
 
@@ -222,7 +249,8 @@
 
 					<td align="right">
 
-						<input type="submit" name="ctl00$ContentPlaceHolder1$SignUp" value="Sign Up" onclick ="submitForm_Signup()" _onclick="SHASubmit();WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolder1$SignUp&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" id="ctl00_ContentPlaceHolder1_SignUp" />
+						<input type="submit" name="ctl00$ContentPlaceHolder1$SignUp" value="Sign Up" onclick ="submitForm_Signup()" _onclick="SHASubmit();WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolder1$SignUp&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" id="ctl00_ContentPlaceHolder1_SignUp "/>
+
 
 					</td>
 

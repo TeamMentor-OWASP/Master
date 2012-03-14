@@ -1,3 +1,22 @@
+
+<!-- Anitha CSFR protection for the web services/web login pages-->
+
+
+<?php include("csfr.php"); ?>
+<?php
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    //Here we parse the form
+    if(!isset($_SESSION['csrf']) || $_SESSION['csrf'] !== $_POST['csrf'])
+        throw new RuntimeException('CSRF attack');
+ 
+    //Do the rest of the processing here
+}
+ 
+//Generate a key, print a form:
+$key = sha1(microtime());
+$_SESSION['csrf'] = $key;
+?>
 <!--Page: <b>Login Page </b>-->
 	<script type="text/javascript">
 		function loginResponse(loginId)
@@ -107,5 +126,7 @@
 			<span id="winpasswordLabel" style="display:inline-block;width:130px;">Windows Login</span><input type="checkbox" id="WindowsLogin"  />
 			<br /><br />
 		</div>		
+        <input type="hidden" name="csrf" value="<?php echo $key; ?>" />
+
 		<span class="errorMessageLogin" id ="errorMessageLogin" ></span>
-	</div>
+	</div>-->

@@ -151,7 +151,13 @@ namespace SecurityInnovation.TeamMentor.WebClient.WebServices
         
 
 		//******** javascriptProxy User Management   no admin privs needed
-        [WebMethod(EnableSession = true)]											public int CreateUser(NewUser newUser)      				{   return javascriptProxy.CreateUser(newUser); 	}
+        [WebMethod(EnableSession = true)]											
+        public int CreateUser(NewUser newUser)      				
+        {
+            return javascriptProxy.CreateUser(newUser);
+            //return 1;       
+        }
+
 		[WebMethod(EnableSession = true)]											public TMUser CreateUser_Random()      						{   return javascriptProxy.CreateUser_Random(); 	}		        
 		
         //******** javascriptProxy User Management   (all demand admin privs)     

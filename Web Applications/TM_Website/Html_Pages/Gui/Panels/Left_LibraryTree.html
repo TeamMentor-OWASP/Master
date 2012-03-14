@@ -20,10 +20,11 @@ TM.Gui.LibraryTree.showTree = function()
 					function (event, data) 	
 						{ 		
 							TM.Events.onLibraryTreeSelected();							
-						});			
-				
-				var firstNode = TM.Gui.LibraryTree.selectFirstNode()
-				TM.Gui.LibraryTree.openNode(firstNode);
+						});
+
+			var firstNode = TM.Gui.LibraryTree.selectFirstNode()
+                //Anitha to close the first node when the page loads
+//				TM.Gui.LibraryTree.openNode(firstNode);
 				TM.Events.onLibraryTreeSelected();				
 
 			};	
