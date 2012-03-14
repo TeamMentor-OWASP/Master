@@ -1,8 +1,9 @@
 using System;
 using System.Web;
 using System.Linq;
+using System.Xml;
 using System.Collections.Generic;
-//using System.Text;
+using System.Text;
 using Microsoft.Security.Application;
 using System.Security.Permissions;
 using SecurityInnovation.TeamMentor.WebClient.WebServices;
@@ -16,6 +17,27 @@ using urn.microsoft.guidanceexplorer;
 using urn.microsoft.guidanceexplorer.guidanceItem;
 using SecurityInnovation.TeamMentor.Authentication.WebServices.AuthorizationRules;
 using SecurityInnovation.TeamMentor.Authentication.ExtensionMethods;
+using System.Security.Cryptography;
+using System.IO;
+using System.Data;
+
+
+//using System.Configuration;
+
+//using System.Web.Security;
+//using System.Web.UI;
+//using System.Web.UI.HtmlControls;
+//using System.Web.UI.WebControls;
+//using System.Web.UI.WebControls.WebParts;
+//using System.Collections.Generic;
+//using System.Xml.Linq;
+//using O2.Kernel.ExtensionMethods;
+//using O2.DotNetWrappers.ExtensionMethods;
+//using O2.DotNetWrappers.Windows;
+
+
+
+
 //O2File:TM_Xml_Database.cs
 //O2File:../ExtensionMethods/TMUser_ExtensionMethods.cs
 //O2File:../Authentication/UserRoles.cs
@@ -186,13 +208,13 @@ namespace SecurityInnovation.TeamMentor.WebClient.WebServices
 				
     		var tmUser = new TMUser {
     									UserID 		= userId,
-    									UserName 	= Encoder.XmlEncode(username),
-    									FirstName 	= Encoder.XmlEncode(firstname),
-    									LastName 	= Encoder.XmlEncode(lastname),
+                                        UserName = Microsoft.Security.Application.Encoder.XmlEncode(username),
+    									FirstName 	=Microsoft.Security.Application.Encoder.XmlEncode(firstname),
+                                        LastName = Microsoft.Security.Application.Encoder.XmlEncode(lastname),
     									Company 	= "",
 										GroupID 	= groupId,
-										Title 		= "", 										
-    									EMail 		= Encoder.XmlEncode(email) ?? ""   									 
+										Title 		= "",
+                                        EMail = Microsoft.Security.Application.Encoder.XmlEncode(email) ?? ""   									 
     								};										
 			
 			TM_Xml_Database.TMUsers.Add(tmUser);
@@ -285,10 +307,70 @@ namespace SecurityInnovation.TeamMentor.WebClient.WebServices
 			if (newUser.groupId !=0)		// if there is a groupId provided we must check if the user has the manageUsers Priviledge						
 				UserRole.ManageUsers.demand();			
 			if (newUser.username.inValid() ||  tmDb.tmUser(newUser.username).notNull())
-				return 0;						   			
-			return tmDb.newUser(newUser.username, newUser.passwordHash, newUser.email, newUser.firstname, newUser.lastname, newUser.note, newUser.groupId );
-		}							
+				return 0;
+           
+            //Anitha added conditions to check for passoword complexity. Pasword is first checked and when
+            //pass the conditions then hash the password .
+            if (newUser.passwordHash.Length > 0)
+            {
+               
+                const string lower = "abcdefghijklmnopqrstuvwxyz";
+                const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const string digits = "0123456789";
+                string allChars = lower + upper + digits;
+
+                string password = newUser.passwordHash;
+               
+            
+                bool rule = password.Length > 8;
+                if(rule)
+                    rule = password.IndexOfAny(lower.ToCharArray()) >= 0;//Check Lowercase if rule is enforced
+                if (rule)
+                    rule = password.IndexOfAny(upper.ToCharArray()) >= 0;//Check Uppercase if rule is enforced
+                if (rule)
+                    rule = password.IndexOfAny(digits.ToCharArray()) >= 0;//Check to for a digit in password if digit is required
+                if (rule)
+                    rule = password.Trim(allChars.ToCharArray()).Length > 0;//Check to make sure special character is included if required
+                if(!rule)
+                 return -2;
+            }
+            else
+            {
+                return -1;
+            }
+
+
+            //code to hash the password before it is created for a new user and after the password complexity met.
+
+            String stringToHash = newUser.username + newUser.passwordHash;
+
+
+            System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create();
+
+
+            Byte[] hashBytes = sha256.ComputeHash(System.Text.Encoding.ASCII.GetBytes(stringToHash));
+
+
+            System.Text.StringBuilder hashString = new System.Text.StringBuilder();
+
+            foreach (byte b in hashBytes)
+
+                hashString.Append(b.ToString("x2"));
+
+            newUser.passwordHash = hashString.ToString();
+            foreach (byte b in hashBytes)
+
+            hashString.Append(b.ToString("x2"));
+
+            newUser.passwordHash = hashString.ToString();
+
+          
 		
+			return tmDb.newUser(newUser.username, newUser.passwordHash, newUser.email, newUser.firstname, newUser.lastname, newUser.note, newUser.groupId );
+		
+        }
+        
+
 		[PrincipalPermission(SecurityAction.Demand, Role = "Admin")] 
 		public static List<int> createTmUsers(this TM_Xml_Database tmDb, List<NewUser> newUsers)
 		{						
