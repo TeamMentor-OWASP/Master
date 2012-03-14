@@ -313,26 +313,20 @@ namespace SecurityInnovation.TeamMentor.WebClient.WebServices
             //pass the conditions then hash the password .
             if (newUser.passwordHash.Length > 0)
             {
+                            
                
-                const string lower = "abcdefghijklmnopqrstuvwxyz";
-                const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                const string digits = "0123456789";
-                string allChars = lower + upper + digits;
-
                 string password = newUser.passwordHash;
-               
-            
+              
                 bool rule = password.Length > 8;
                 if(rule)
-                    rule = password.IndexOfAny(lower.ToCharArray()) >= 0;//Check Lowercase if rule is enforced
-                if (rule)
-                    rule = password.IndexOfAny(upper.ToCharArray()) >= 0;//Check Uppercase if rule is enforced
-                if (rule)
-                    rule = password.IndexOfAny(digits.ToCharArray()) >= 0;//Check to for a digit in password if digit is required
-                if (rule)
-                    rule = password.Trim(allChars.ToCharArray()).Length > 0;//Check to make sure special character is included if required
-                if(!rule)
-                 return -2;
+                rule = Regex.IsMatch(password, @"^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?!.*s).*$");
+                //Check to for a digit,Uppercase,lowercase,digit and special character in password 
+                
+               
+ 
+
+                if (!rule)
+                    return -2;
             }
             else
             {
@@ -358,19 +352,13 @@ namespace SecurityInnovation.TeamMentor.WebClient.WebServices
                 hashString.Append(b.ToString("x2"));
 
             newUser.passwordHash = hashString.ToString();
-            foreach (byte b in hashBytes)
-
-            hashString.Append(b.ToString("x2"));
-
-            newUser.passwordHash = hashString.ToString();
-
+          
           
 		
 			return tmDb.newUser(newUser.username, newUser.passwordHash, newUser.email, newUser.firstname, newUser.lastname, newUser.note, newUser.groupId );
 		
         }
         
-
 		[PrincipalPermission(SecurityAction.Demand, Role = "Admin")] 
 		public static List<int> createTmUsers(this TM_Xml_Database tmDb, List<NewUser> newUsers)
 		{						
