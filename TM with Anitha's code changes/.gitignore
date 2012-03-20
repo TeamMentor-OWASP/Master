@@ -1,0 +1,7 @@
+/Library_Data/XmlDatabase/TM_Libraries
+
+# Visual Studio files # 
+/Web Applications/TM_Website/bin
+/Web Applications/TM_Website/obj
+*.suo
+o2.config
