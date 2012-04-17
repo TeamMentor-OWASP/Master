@@ -3,12 +3,13 @@
 o2.config
 
 # Visual Studio files # 
-/Web Applications/TM_Website/bin
-/Web Applications/TM_Website/obj
-bin
+*.pdb
+release
+Web Applications/TeamMentor.CoreLib/bin/Debug/*.xml
 obj
 *.suo
 o2.config
 *.nupkg
 Web Applications/TM_Website/bin/*.xml
 /Web Applications/packages
+
