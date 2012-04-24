@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<guidanceItem id="b4d8c22c-4757-4e32-a5dd-1d5e75a938a9" Author="" Category="Input and Data Validation" Priority="2" Rule_Type="Checklist Item" Status="" Technology="ASP.NET 3.5" title="Untrusted Output Is Not Directly Echoed Back to the User" Topic="Security" phase="Implementation" xmlns="urn:microsoft:guidanceexplorer:guidanceItem">
-  <content>&lt;h1&gt;What to Check For&lt;/h1&gt;&lt;p&gt;Ensure that your application does not&amp;nbsp;echo the input back to the user without first validating and/or encoding the data. &lt;/p&gt;&lt;h1&gt;Why&lt;/h1&gt;&lt;p&gt;Echoing input directly back to the user makes your application susceptible to malicious input attacks, such as cross-site scripting.&lt;/p&gt;&lt;h1&gt;Related Guideline&lt;/h1&gt;&lt;ul&gt;&lt;li&gt;&lt;a href="ruledisplay:572ac2ef-647b-4cba-a976-7c285a6d475f"&gt;&lt;/a&gt;&lt;a href="ruledisplay:160c94cd-efc0-4885-9b0d-cd3ad60365e1"&gt;Do Not Echo Untrusted Data Back to the User&lt;/a&gt; &lt;/li&gt;&lt;/ul&gt;&lt;hr&gt;&lt;p&gt;Adapted from Microsoft patterns &amp;amp; practices guidance. &lt;/p&gt;</content>
-</guidanceItem>
+<?xml version="1.0"?>
+<TeamMentor_Article Metadata_Hash="1060579022" Content_Hash="454279135">
+  <Metadata>
+    <Id>b4d8c22c-4757-4e32-a5dd-1d5e75a938a9</Id>
+    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Title>Untrusted Output Is Not Directly Echoed Back to the User</Title>
+    <Category>Input and Data Validation</Category>
+    <Phase>Implementation</Phase>
+    <Technology>ASP.NET 3.5</Technology>
+    <Type>Checklist Item</Type>
+    <DirectLink />
+    <Tag />
+    <Security_Demand />
+    <Author />
+    <Priority>2</Priority>
+    <Status />
+  </Metadata>
+  <Content Sanitized="true" DataType="Html">
+    <Data><![CDATA[<h1>What to Check For</h1><p>Ensure that your application does not&nbsp;echo the input back to the user without first validating and/or encoding the data. </p><h1>Why</h1><p>Echoing input directly back to the user makes your application susceptible to malicious input attacks, such as cross-site scripting.</p><h1>Related Guideline</h1><ul><li><a href="ruledisplay:572ac2ef-647b-4cba-a976-7c285a6d475f"></a><a href="ruledisplay:160c94cd-efc0-4885-9b0d-cd3ad60365e1">Do Not Echo Untrusted Data Back to the User</a> </li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+  </Content>
+</TeamMentor_Article>

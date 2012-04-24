@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<guidanceItem id="9fc08a19-1267-4260-b29a-7afbb5f3ba32" Author="" Category="Session Management" Priority="2" Rule_Type="Guideline" Status="" Technology="ASP.NET 3.5" title="Protect Your Session State Communication Channel" Topic="Security" phase="Deployment" xmlns="urn:microsoft:guidanceexplorer:guidanceItem">
-  <content>&lt;h1&gt;What to Do&lt;/h1&gt;&lt;p&gt;Protect the channel to the remote state store via encryption. &lt;/p&gt;&lt;h1&gt;Why&lt;/h1&gt;&lt;p&gt;To ensure the user state remains private and unaltered. &lt;/p&gt;&lt;h1&gt;When&lt;/h1&gt;&lt;p&gt;If the state service is located on a remote server and you are concerned about the network eavesdropping threat apply this rule. &lt;/p&gt;&lt;h1&gt;How&lt;/h1&gt;&lt;p&gt;To protect sensitive session state over the network between the Web server and remote state store, protect the channel to the two servers using IPSec or SSL. This provides privacy and integrity for the session state data across the network. If you use SSL, you must install a server certificate on the database server. &lt;/p&gt;&lt;h1&gt;Related Items&lt;/h1&gt;&lt;ul&gt;&lt;li&gt;&lt;a href="ruledisplay:f10679b7-5390-49ee-b529-7a2f7c059ce7"&gt;Encrypt Connection Strings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="ruledisplay:39be86fd-65da-4b79-8636-71cbc16e445c"&gt;The Session State Port is Changed from the Default of 42424&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;hr&gt;&lt;p&gt;Adapted from Microsoft patterns &amp;amp; practices guidance. &lt;/p&gt;</content>
-</guidanceItem>
+<?xml version="1.0"?>
+<TeamMentor_Article Metadata_Hash="-706320806" Content_Hash="-1597884502">
+  <Metadata>
+    <Id>9fc08a19-1267-4260-b29a-7afbb5f3ba32</Id>
+    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Title>Protect Your Session State Communication Channel</Title>
+    <Category>Session Management</Category>
+    <Phase>Deployment</Phase>
+    <Technology>ASP.NET 3.5</Technology>
+    <Type>Guideline</Type>
+    <DirectLink />
+    <Tag />
+    <Security_Demand />
+    <Author />
+    <Priority>2</Priority>
+    <Status />
+  </Metadata>
+  <Content Sanitized="true" DataType="Html">
+    <Data><![CDATA[<h1>What to Do</h1><p>Protect the channel to the remote state store via encryption. </p><h1>Why</h1><p>To ensure the user state remains private and unaltered. </p><h1>When</h1><p>If the state service is located on a remote server and you are concerned about the network eavesdropping threat apply this rule. </p><h1>How</h1><p>To protect sensitive session state over the network between the Web server and remote state store, protect the channel to the two servers using IPSec or SSL. This provides privacy and integrity for the session state data across the network. If you use SSL, you must install a server certificate on the database server. </p><h1>Related Items</h1><ul><li><a href="ruledisplay:f10679b7-5390-49ee-b529-7a2f7c059ce7">Encrypt Connection Strings</a></li><li><a href="ruledisplay:39be86fd-65da-4b79-8636-71cbc16e445c">The Session State Port is Changed from the Default of 42424</a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+  </Content>
+</TeamMentor_Article>

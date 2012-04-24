@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<guidanceItem id="3b00a05d-4063-4aee-8995-e8dad7193f57" Author="" Category="Authentication" Priority="2" Rule_Type="Checklist Item" Status="" Technology="ASP.NET 3.5" title="Hashed Password Format Is Specified in Membership Provider Configuration" Topic="Security" phase="Implementation" xmlns="urn:microsoft:guidanceexplorer:guidanceItem">
-  <content>&lt;h1&gt;What to Check For&lt;/h1&gt;&lt;p&gt;Ensure that hashed password format is specified in provider configuration.&lt;/p&gt;&lt;h1&gt;Related Items&lt;/h1&gt;&lt;ul&gt;&lt;li&gt;&lt;a href="ruledisplay:385e4669-6c74-4cfa-b94f-5fcc754a263f"&gt;Specify Hashed Password Format in Provider Configuration&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;hr&gt;&lt;p&gt;Adapted from Microsoft patterns &amp;amp; practices guidance. &lt;/p&gt;</content>
-</guidanceItem>
+<?xml version="1.0"?>
+<TeamMentor_Article Metadata_Hash="847256792" Content_Hash="1629047280">
+  <Metadata>
+    <Id>3b00a05d-4063-4aee-8995-e8dad7193f57</Id>
+    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Title>Hashed Password Format Is Specified in Membership Provider Configuration</Title>
+    <Category>Authentication</Category>
+    <Phase>Implementation</Phase>
+    <Technology>ASP.NET 3.5</Technology>
+    <Type>Checklist Item</Type>
+    <DirectLink />
+    <Tag />
+    <Security_Demand />
+    <Author />
+    <Priority>2</Priority>
+    <Status />
+  </Metadata>
+  <Content Sanitized="true" DataType="Html">
+    <Data><![CDATA[<h1>What to Check For</h1><p>Ensure that hashed password format is specified in provider configuration.</p><h1>Related Items</h1><ul><li><a href="ruledisplay:385e4669-6c74-4cfa-b94f-5fcc754a263f">Specify Hashed Password Format in Provider Configuration</a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+  </Content>
+</TeamMentor_Article>

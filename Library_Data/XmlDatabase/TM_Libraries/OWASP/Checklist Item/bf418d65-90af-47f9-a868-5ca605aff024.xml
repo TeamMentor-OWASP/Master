@@ -1,6 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<guidanceItem id="bf418d65-90af-47f9-a868-5ca605aff024" Author="" Category="Data Access" Priority="2" Rule_Type="Checklist Item" Status="" Technology="ASP.NET 3.5" title="Dynamic Queries That Accept User Input Are Used Only If Stored Procedures Cannot Be Used" Topic="Security" phase="Implementation" xmlns="urn:microsoft:guidanceexplorer:guidanceItem">
-  <content>&lt;h1&gt;What to Check For&lt;/h1&gt;&lt;p&gt;Check to ensure that your application avoids constructing SQL queries in code that include user input. Make sure that it uses parameterized stored procedures that use type safe SQL parameters. &lt;/p&gt;&lt;h1&gt;Why&lt;/h1&gt;&lt;p&gt;If you construct queries dynamically using user input, your code is susceptible to SQL injection. &lt;/p&gt;&lt;br&gt;&lt;h1&gt;How to Fix&lt;/h1&gt;&lt;p&gt;For example, avoid the following style of code.&lt;/p&gt;
-&lt;pre&gt;// Use dynamic SQLSqlDataAdapter&lt;br&gt; myCommand = new SqlDataAdapter(&lt;br&gt;         "SELECT au_lname, au_fname FROM authors WHERE au_id = '" +&lt;br&gt;          SSN.Text + "'", myConnection);  &lt;/pre&gt;&lt;br&gt;&lt;p&gt;If a malicious user supplies "' ; DROP DATABASE pubs --'" for the SSN.Text field, the code inserts the user's malicious input and generates the following query:&lt;/p&gt;
-&lt;pre&gt;SELECT au_lname, au_fname FROM authors WHERE au_id = ''; DROP DATABASE pubs --'  &lt;/pre&gt;&lt;br&gt;&lt;p&gt;The ; (semicolon) character tells SQL that this is the end of the current statement, which is then followed by the malicious SQL code, which in this example drops the authors table.&lt;/p&gt;&lt;hr&gt;&lt;p&gt;Adapted from Microsoft patterns &amp;amp; practices guidance. &lt;/p&gt;</content>
-</guidanceItem>
+<?xml version="1.0"?>
+<TeamMentor_Article Metadata_Hash="-318174933" Content_Hash="-1660459033">
+  <Metadata>
+    <Id>bf418d65-90af-47f9-a868-5ca605aff024</Id>
+    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Title>Dynamic Queries That Accept User Input Are Used Only If Stored Procedures Cannot Be Used</Title>
+    <Category>Data Access</Category>
+    <Phase>Implementation</Phase>
+    <Technology>ASP.NET 3.5</Technology>
+    <Type>Checklist Item</Type>
+    <DirectLink />
+    <Tag />
+    <Security_Demand />
+    <Author />
+    <Priority>2</Priority>
+    <Status />
+  </Metadata>
+  <Content Sanitized="true" DataType="Html">
+    <Data><![CDATA[<h1>What to Check For</h1><p>Check to ensure that your application avoids constructing SQL queries in code that include user input. Make sure that it uses parameterized stored procedures that use type safe SQL parameters. </p><h1>Why</h1><p>If you construct queries dynamically using user input, your code is susceptible to SQL injection. </p><br><h1>How to Fix</h1><p>For example, avoid the following style of code.</p>
+<pre>// Use dynamic SQLSqlDataAdapter<br> myCommand = new SqlDataAdapter(<br>         "SELECT au_lname, au_fname FROM authors WHERE au_id = '" +<br>          SSN.Text + "'", myConnection);  </pre><br><p>If a malicious user supplies "' ; DROP DATABASE pubs --'" for the SSN.Text field, the code inserts the user's malicious input and generates the following query:</p>
+<pre>SELECT au_lname, au_fname FROM authors WHERE au_id = ''; DROP DATABASE pubs --'  </pre><br><p>The ; (semicolon) character tells SQL that this is the end of the current statement, which is then followed by the malicious SQL code, which in this example drops the authors table.</p><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+  </Content>
+</TeamMentor_Article>

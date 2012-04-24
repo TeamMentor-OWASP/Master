@@ -1,19 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<guidanceItem id="65b77314-5827-48eb-88be-e739c60f96a7" Author="" Category="Server Hardening" Priority="J.D. Meier, Alex Mackman, Michael Dunner, Srinath Vasireddy, Ray Escamilla and Anandha Murukan" Rule_Type="Checklist Item" Status="" Technology=" Any" title="IIS Is Configured for W3C Extended Log File Format Auditing" Topic="Security" phase="Deployment" libraryId="4738d445-bc9b-456c-8b35-a35057596c16" xmlns="urn:microsoft:guidanceexplorer:guidanceItem">
-  <content>
-&lt;h1&gt;Applies to&lt;/h1&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;div&gt;Web Application&lt;/div&gt;
-&lt;/li&gt;&lt;/ul&gt;
-&lt;h1&gt;What to Check For&lt;/h1&gt;
-&lt;p&gt;Check to ensure that IIS is configured for W3C Extended log file format auditing.&lt;/p&gt;
-&lt;br&gt;
-&lt;h1&gt;How to Fix&lt;/h1&gt;
-&lt;p&gt;You can configure IIS W3C Extended Log File Format Auditing by selecting &lt;strong&gt;
-W3C Extended Log File Format&lt;/strong&gt; on the &lt;strong&gt;Web&lt;/strong&gt; &lt;strong&gt;Site&lt;/strong&gt; tab of the Web site's properties dialog box. You can then choose
-&lt;strong&gt;Extended Properties&lt;/strong&gt; such as URI Stem and URI Query.&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;Adapted from Microsoft patterns &amp;amp; practices guidance.&lt;/p&gt;
-</content>
-</guidanceItem>
+<?xml version="1.0"?>
+<TeamMentor_Article Metadata_Hash="64617390" Content_Hash="607136887">
+  <Metadata>
+    <Id>65b77314-5827-48eb-88be-e739c60f96a7</Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
+    <Title>IIS Is Configured for W3C Extended Log File Format Auditing</Title>
+    <Category>Server Hardening</Category>
+    <Phase>Deployment</Phase>
+    <Technology> Any</Technology>
+    <Type>Checklist Item</Type>
+    <DirectLink />
+    <Tag />
+    <Security_Demand />
+    <Author />
+    <Priority>J.D. Meier, Alex Mackman, Michael Dunner, Srinath Vasireddy, Ray Escamilla and Anandha Murukan</Priority>
+    <Status />
+  </Metadata>
+  <Content Sanitized="true" DataType="Html">
+    <Data><![CDATA[
+<h1>Applies to</h1>
+<ul>
+<li>
+<div>Web Application</div>
+</li></ul>
+<h1>What to Check For</h1>
+<p>Check to ensure that IIS is configured for W3C Extended log file format auditing.</p>
+<br>
+<h1>How to Fix</h1>
+<p>You can configure IIS W3C Extended Log File Format Auditing by selecting <strong>
+W3C Extended Log File Format</strong> on the <strong>Web</strong> <strong>Site</strong> tab of the Web site's properties dialog box. You can then choose
+<strong>Extended Properties</strong> such as URI Stem and URI Query.</p>
+<hr>
+<p>Adapted from Microsoft patterns &amp; practices guidance.</p>
+]]></Data>
+  </Content>
+</TeamMentor_Article>
