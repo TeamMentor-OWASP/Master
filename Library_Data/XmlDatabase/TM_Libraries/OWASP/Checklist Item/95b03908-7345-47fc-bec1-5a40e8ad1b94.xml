@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="120760848" Content_Hash="-901816280">
   <Metadata>
     <Id>95b03908-7345-47fc-bec1-5a40e8ad1b94</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Sensitive Data Is Protected Over the Network</Title>
     <Category>Sensitive Data</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,80 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>What to Check For</h1><p>Ensure that encryption is used to protect all&nbsp;sensitive data transmitted over the network.</p><h1>Why</h1><p>Because network traffic can be easily eavesdropped or modified by attackers, passing sensitive data over the network is prone to a host of attacks, including data theft and data manipulation.</p><h1>How to Check</h1><p>When an application transmits sensitive data over the network, it is necessary to ensure that it is encrypted to protect the data from being&nbsp;read or modified in transit. To ensure this, follow the steps outlined below:</p><ol><li><p><strong>Identify sensitive information. </strong>Sensitive data is any information that is kept secret and should be disclosed only to authorized parties. Common examples of sensitive data include, but are not limited to, names of customers, government issued ID numbers, credit card and other financial information, passwords and private keys. Some industries, such as health care and banking, have regulatory standards that define sensitive information. Use regulatory requirements, as they apply to your application, to identify sensitive data. Sensitive data can be defined as follows:</p><ul><li>Information that either contains personally identifiable information or can be used to derive personally identifiable information that should not be shared with others. </li><li>Information that a user provides that they would not want shared with other users of the application. </li><li>Information that comes from an external trusted source that is not designed to be shared with users</li></ul><strong></strong></li><li><p><strong>Verify that sensitive data is securely transmitted. </strong>Ensure that your application transmits sensitive data in a secured fashion.&nbsp;Verify that&nbsp;your application&nbsp;encrypts the data using&nbsp;encryption or hashing and encrypts the communication link:</p><ul><li><p><strong>Encrypting application data:</strong> Your application securely transforms its application data before transmitting it over the network:</p><ul><li><p><strong>Hashing: </strong>Hashing is a one-way mechanism for protecting sensitive data in a non-retrievable way. If your application uses hashing as means for protecting sensitive data, verify that the following pieces are in place:</p><ul><li><strong>Salt</strong>: Your application generates its salt using the SecureRandom class. </li><li><strong>Function</strong>: Your application uses SHA-256, SHA-384 or SHA-512 as its hash function. </li><li><strong>Invocation</strong>: Your application invokes the <strong>Cipher.doFinal</strong> method to perform the hashing procedure. </li><li><strong>Clean-up</strong>: Your application securely cleans-up all instances of the sensitive data after the hashing procedure has been completed. Consult the <a href="ruledisplay:E9F37DE4-E6E7-4D65-A3E1-C2292372AAF0">Sensitive Data is Cleared from Memory when No Longer Used</a> checklist for more details.</li></ul></li><li><p><strong>Encryption:</strong> Encryption is a mechanism for protecting sensitive data in a retrievable way. If your application uses encryption as means for protecting sensitive data, verify that the following pieces are in place:</p><ul><li><strong>Encryption Key</strong>: Your application's encryption keys are securely stored inside your application's key store. Consult the <a href="ruledisplay:235E588E-621B-4C5E-A50E-8EA447330AD0">Use a Secure Key Storage Location</a> guideline for more details. </li><li><strong>Function</strong>: Your application uses AES, 3DES, or any other strong symmetric encryption function. </li><li><strong>Invocation</strong>: Your application invokes the <strong>Cipher.init</strong> and <strong>Cipher.doFinal</strong> methods to perform the encryption procedure. </li><li><strong>Clean-up</strong>: Your application securely cleans-up all instances of the sensitive data and their encryption keys after the encryption procedure has been completed. Consult the <a href="ruledisplay:E9F37DE4-E6E7-4D65-A3E1-C2292372AAF0">Sensitive Data is Cleared from Memory when No Longer Used</a> checklist for more details.</li></ul></li></ul></li><li><p><strong>Encrypting the communication links:</strong> Using the <a href="ruledisplay:AFC86927-1116-4207-B604-55FE690C298B">Communication Links are Encrypted</a> checklist, check if your application's communication links are properly secured.</p></li></ul></li></ol><h1>Problem Example</h1><p>The following code authenticates a user based on username and password. The supplied credentials are compared to the credentials stored in the backend database. Unfortunately, the credentials are transmitted in plaintext and could be stolen if the network is compromised. </p><br><blockquote><pre>public boolean validateUser(String user, char[] pass)<br>{<br>      // Query the credential store with the provided credentials<br>      ...<br>}</pre></blockquote><h1>Related Guideline</h1><ul><li><a href="ruledisplay:024B6044-7C89-436C-8111-1B6FAE7298AC">Guideline: Protect Sensitive Data Over the Network (Java Web Application)</a> </li></ul>]]></Data>
+    <Data><![CDATA[<h1>What to Check For</h1>
+  <p>Ensure that encryption is used to protect all&amp;nbsp;sensitive data transmitted over the network.</p>
+  <h1>Why</h1>
+  <p>Because network traffic can be easily eavesdropped or modified by attackers, passing sensitive data over the network is prone to a host of attacks, including data theft and data manipulation.</p>
+  <h1>How to Check</h1>
+  <p>When an application transmits sensitive data over the network, it is necessary to ensure that it is encrypted to protect the data from being&amp;nbsp;read or modified in transit. To ensure this, follow the steps outlined below:</p>
+  <ol>
+    <li>
+      <p>
+        <strong>Identify sensitive information. </strong>Sensitive data is any information that is kept secret and should be disclosed only to authorized parties. Common examples of sensitive data include, but are not limited to, names of customers, government issued ID numbers, credit card and other financial information, passwords and private keys. Some industries, such as health care and banking, have regulatory standards that define sensitive information. Use regulatory requirements, as they apply to your application, to identify sensitive data. Sensitive data can be defined as follows:</p>
+      <ul>
+        <li>Information that either contains personally identifiable information or can be used to derive personally identifiable information that should not be shared with others. </li>
+        <li>Information that a user provides that they would not want shared with other users of the application. </li>
+        <li>Information that comes from an external trusted source that is not designed to be shared with users</li>
+      </ul>
+      <strong>
+      </strong>
+    </li>
+    <li>
+      <p>
+        <strong>Verify that sensitive data is securely transmitted. </strong>Ensure that your application transmits sensitive data in a secured fashion.&amp;nbsp;Verify that&amp;nbsp;your application&amp;nbsp;encrypts the data using&amp;nbsp;encryption or hashing and encrypts the communication link:</p>
+      <ul>
+        <li>
+          <p>
+            <strong>Encrypting application data:</strong> Your application securely transforms its application data before transmitting it over the network:</p>
+          <ul>
+            <li>
+              <p>
+                <strong>Hashing: </strong>Hashing is a one-way mechanism for protecting sensitive data in a non-retrievable way. If your application uses hashing as means for protecting sensitive data, verify that the following pieces are in place:</p>
+              <ul>
+                <li>
+                  <strong>Salt</strong>: Your application generates its salt using the SecureRandom class. </li>
+                <li>
+                  <strong>Function</strong>: Your application uses SHA-256, SHA-384 or SHA-512 as its hash function. </li>
+                <li>
+                  <strong>Invocation</strong>: Your application invokes the <strong>Cipher.doFinal</strong> method to perform the hashing procedure. </li>
+                <li>
+                  <strong>Clean-up</strong>: Your application securely cleans-up all instances of the sensitive data after the hashing procedure has been completed. Consult the <a href="E9F37DE4-E6E7-4D65-A3E1-C2292372AAF0">Sensitive Data is Cleared from Memory when No Longer Used</a> checklist for more details.</li>
+              </ul>
+            </li>
+            <li>
+              <p>
+                <strong>Encryption:</strong> Encryption is a mechanism for protecting sensitive data in a retrievable way. If your application uses encryption as means for protecting sensitive data, verify that the following pieces are in place:</p>
+              <ul>
+                <li>
+                  <strong>Encryption Key</strong>: Your application's encryption keys are securely stored inside your application's key store. Consult the <a href="/article/f12d5701-d706-47af-8c14-eaeeb4fad8e3">Use a Secure Key Storage Location</a> guideline for more details. </li>
+                <li>
+                  <strong>Function</strong>: Your application uses AES, 3DES, or any other strong symmetric encryption function. </li>
+                <li>
+                  <strong>Invocation</strong>: Your application invokes the <strong>Cipher.init</strong> and <strong>Cipher.doFinal</strong> methods to perform the encryption procedure. </li>
+                <li>
+                  <strong>Clean-up</strong>: Your application securely cleans-up all instances of the sensitive data and their encryption keys after the encryption procedure has been completed. Consult the <a href="E9F37DE4-E6E7-4D65-A3E1-C2292372AAF0">Sensitive Data is Cleared from Memory when No Longer Used</a> checklist for more details.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <p>
+            <strong>Encrypting the communication links:</strong> Using the <a href="/article/26ca24fa-2c72-4482-80e3-7de6e8eb013d">Communication Links are Encrypted</a> checklist, check if your application's communication links are properly secured.</p>
+        </li>
+      </ul>
+    </li>
+  </ol>
+  <h1>Problem Example</h1>
+  <p>The following code authenticates a user based on username and password. The supplied credentials are compared to the credentials stored in the backend database. Unfortunately, the credentials are transmitted in plaintext and could be stolen if the network is compromised. </p>
+  <br />
+  <blockquote>
+    <pre>public boolean validateUser(String user, char[] pass)<br />{<br />      // Query the credential store with the provided credentials<br />      ...<br />}</pre>
+  </blockquote>
+  <h1>Related Guideline</h1>
+  <ul>
+    <li>
+      <a href="024B6044-7C89-436C-8111-1B6FAE7298AC">Guideline: Protect Sensitive Data Over the Network (Java Web Application)</a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

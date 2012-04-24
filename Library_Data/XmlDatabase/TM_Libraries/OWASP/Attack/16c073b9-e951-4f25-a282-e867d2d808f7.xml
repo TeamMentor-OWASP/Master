@@ -16,64 +16,102 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<br>
-<br>
-<h1>Applies To</h1>
-<p>Web Applications that use an AJAX implementation</p>
-<h1>Description</h1>
-<p>AJAX (Asynchronous Javascript and XML) technology allows web pages to dynamically update specific content behind the scenes without the need to refresh the whole page. The ability to continually update the content of an AJAX page is done by calling an XmlHttpRequest
+    <Data><![CDATA[<br />
+  <br />
+  <h1>Applies To</h1>
+  <p>Web Applications that use an AJAX implementation</p>
+  <h1>Description</h1>
+  <p>AJAX (Asynchronous Javascript and XML) technology allows web pages to dynamically update specific content behind the scenes without the need to refresh the whole page. The ability to continually update the content of an AJAX page is done by calling an XmlHttpRequest
  (XHR) object with JavaScript to send HTTP requests to web servers. These requests typically send data in the form of XML or JSON (JavaScript Object Notation).
 </p>
-<p>AJAX injection is a type of <a href="?#ruledisplay:BC10DCE2-CA48-44BF-8BF6-FEFBE8DCCB7E">
+  <p>AJAX injection is a type of <a href="/article/ec178496-024d-4b3c-8381-8db94767e539">
 Cross Site Scripting Attack</a> (XSS) that leverages the XML or JSON format of the input to the client browser. JSON is particularly popular because it is easy to parse JSON objects by simply passing them to the eval() function. Unfortunately, the use of eval()
  makes the application equivalently easy to exploit. Cleverly format strings containing malicious JavaScript may be stored as content on servers with weak validation or sent directly to the client browser using a spoofing or man in the middle attack. This JavaScript
  is then parsed and execute by the client's browser without their knowledge. Ultimately, this attack may be used to steal session cookies, send email on behalf of the victim, or any other impact available to the XSS attack.</p>
-<h1>Impact</h1>
-<ul>
-<li><strong>Confidentiality:</strong> Since the code runs in the same domain as the trusted site any cookies or other confidential site data can be read by the malicious AJAX code.
-</li><li><strong>JavaScript code injection:</strong> By using the XMLHttpRequest object attackers can download and install JavaScript code modules to be run on the local browser dynamically and send information from the computer without the victim's knowledge.</li></ul>
-<h1>Vulnerabilities</h1>
-<ul>
-<li>Failure to validate user input for script tags when that input can be echoed back into a web page.
-</li><li>Failure to encode user supplied input upon display of the data </li><li>Trusting data retrieved from a shared data store.</li></ul>
-<h1>Countermeasures</h1>
-<p><strong>Constrain input:</strong> Use vigorous white-list style checking on any user input that may be reflected to a user's browser.
+  <h1>Impact</h1>
+  <ul>
+    <li>
+      <strong>Confidentiality:</strong> Since the code runs in the same domain as the trusted site any cookies or other confidential site data can be read by the malicious AJAX code.
+</li>
+    <li>
+      <strong>JavaScript code injection:</strong> By using the XMLHttpRequest object attackers can download and install JavaScript code modules to be run on the local browser dynamically and send information from the computer without the victim's knowledge.</li>
+  </ul>
+  <h1>Vulnerabilities</h1>
+  <ul>
+    <li>Failure to validate user input for script tags when that input can be echoed back into a web page.
+</li>
+    <li>Failure to encode user supplied input upon display of the data </li>
+    <li>Trusting data retrieved from a shared data store.</li>
+  </ul>
+  <h1>Countermeasures</h1>
+  <p>
+    <strong>Constrain input:</strong> Use vigorous white-list style checking on any user input that may be reflected to a user's browser.
 </p>
-<p><strong>HTMLEncode all user input on display:</strong> Use white-list style HTMLEncoding libraries to ensure all possibly malicious characters are encoded before being echoed back to the user, regardless of whether they're loaded as part of the original
+  <p>
+    <strong>HTMLEncode all user input on display:</strong> Use white-list style HTMLEncoding libraries to ensure all possibly malicious characters are encoded before being echoed back to the user, regardless of whether they're loaded as part of the original
  page load or through later XMLHttpRequests.</p>
-<h1>Example</h1>
-<p>Suppose you use an AJAX based web mail client. Because these are the days of Web 2.0, your mail client displays a list of your favorite contacts and lets you know their status. By default this status is set to &quot;Online&quot; or &quot;Away,&quot; but a custom message may
+  <h1>Example</h1>
+  <p>Suppose you use an AJAX based web mail client. Because these are the days of Web 2.0, your mail client displays a list of your favorite contacts and lets you know their status. By default this status is set to "Online" or "Away," but a custom message may
  also be set by each contact that is reflect in your client. In order for this to work, the web page periodically updates this status list by requesting the list of contacts from the server. The server returns this information to the client as the following
  JSON object:</p>
-<pre>{<br>   &quot;numberOnline&quot;: &quot;3&quot;,<br>   &quot;nameAndStatus&quot;: [<br>   &quot;Alice, Online&quot;,<br>   &quot;Bob, Online&quot;,<br>   &quot;Mallory, Away&quot; ]<br>}</pre>
-<p>The following code shows the client JavaScript code which is called periodically to request the above object and update the DOM.</p>
-<pre>var contactStatusList;<br>var http_request = new XMLHttpRequest();<br>http_request.open(&quot;GET&quot;, url, true);<br>http_request.onreadystatechange = function ()<br> {<br>    if (http_request.readyState == 4)<br> {<br>        if (http_request.status == 200)<br> {<br>            contactStatusList = eval(&quot;(&quot; &#43; http_request.responseText &#43; &quot;)&quot;);<br>        }        http_request = null;    }};http_request.send(null);</pre>
-<p>Now suppose that Mallory's status is set to a custom value. This may have been changed by Mallory herself or by a third party attacker. Either way, because the server providing the data to the mail client has poor validation, this status value is changed
- to include cleverly formatted malicious JavaScript. Suppose that instead of &quot;Away&quot; the value is changed to the following:</p>
-<pre>Away&quot;});alert(&quot;Gotcha!&quot;);//</pre>
-<p>The first thing to notice is that the JSON object, which represents a the contact status list, is valid JavaScript. Because of this the eval() can be used to evaluate it. The above code completes the status object, inserts additional JavaScript, and comments
- out the rest of the line. When the code is passed as to the eval() function the additional JavaScript is run. Note that &quot;alert(&quot;Gotcha!&quot;)&quot; can be replaced with any malicious JavaScript and it will be run in the client's browser. Because the above code is an
+  <pre>{<br />   "numberOnline": "3",<br />   "nameAndStatus": [<br />   "Alice, Online",<br />   "Bob, Online",<br />   "Mallory, Away" ]<br />}</pre>
+  <p>The following code shows the client JavaScript code which is called periodically to request the above object and update the DOM.</p>
+  <pre>var contactStatusList;<br />var http_request = new XMLHttpRequest();<br />http_request.open("GET", url, true);<br />http_request.onreadystatechange = function ()<br /> {<br />    if (http_request.readyState == 4)<br /> {<br />        if (http_request.status == 200)<br /> {<br />            contactStatusList = eval("(" &amp;#43; http_request.responseText &amp;#43; ")");<br />        }        http_request = null;    }};http_request.send(null);</pre>
+  <p>Now suppose that Mallory's status is set to a custom value. This may have been changed by Mallory herself or by a third party attacker. Either way, because the server providing the data to the mail client has poor validation, this status value is changed
+ to include cleverly formatted malicious JavaScript. Suppose that instead of "Away" the value is changed to the following:</p>
+  <pre>Away"});alert("Gotcha!");//</pre>
+  <p>The first thing to notice is that the JSON object, which represents a the contact status list, is valid JavaScript. Because of this the eval() can be used to evaluate it. The above code completes the status object, inserts additional JavaScript, and comments
+ out the rest of the line. When the code is passed as to the eval() function the additional JavaScript is run. Note that "alert("Gotcha!")" can be replaced with any malicious JavaScript and it will be run in the client's browser. Because the above code is an
  example, an alert message window will be displayed. In general, however, JavaScript could be downloaded and executed without the user's knowledge.</p>
-<h1>Additional Resources</h1>
-<ul>
-<li>For more information on AJAX including common vulnerabilities that are associated with the technology, see &quot;Ajax Security Basics&quot;:
-<a href="http://www.securityfocus.com/infocus/1868">http://www.securityfocus.com/infocus/1868</a></li></ul>
-<ul>
-<li>For information on AJAX attacks and JavaScript Hijacking, see &quot;JavaScript Hijacking&quot;:<span style="color:rgb(17,17,17); font-family:Calibri,Arial,Helvetica,sans-serif; font-size:small">&nbsp;</span><a href="http://www.net-security.org/dl/articles/JavaScript_Hijacking.pdf" style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; color:rgb(51,51,153); font-weight:bold; font-family:Calibri,Arial,Helvetica,sans-serif; font-size:small">http://www.net-security.org/dl/articles/JavaScript_Hijacking.pdf</a></li></ul>
-<h1>Related Items</h1>
-<ul>
-<li><a href="?#ruledisplay:BC10DCE2-CA48-44BF-8BF6-FEFBE8DCCB7E">Attack: Cross Site Scripting Attack</a>
-</li><li><a href="?#ruledisplay:B9DD25F1-3C5C-40DD-A82E-464D0C02C14D">Attack: Command Injection Attack</a>
-</li><li><a href="?#ruledisplay:685CA8C0-E102-4517-A539-4B826D1962EB">Attack: Double Encoding Attack</a>
-</li><li><a href="?#ruledisplay:3EB8979E-59F0-4C2B-8D8A-CFB173E5D66B">Attack: HTTP Session Hijacking Attack</a>
-</li><li><a href="?#ruledisplay:208A476B-ABCA-4630-9D02-746C52F47017">Attack: XML Injection Attack</a>
-</li><li><a href="?#ruledisplay:42F599F0-D1D6-4F25-9CC2-D5473F19113F">Guideline: Validate All Data Passed Between Native and Java Code
-</a></li><li><a href="?#ruledisplay:DD60FFDF-904D-45A8-8278-F3E8CEBA911F">Guideline: Do Not Rely on Request Validation
-</a></li><li><a href="?#ruledisplay:58F9B51D-794F-4CFC-B568-7F5E55DEB402">Guideline: Do Not Rely on Client-Side Validation
-</a></li><li><a href="?#ruledisplay:2D8158D1-E2D1-459F-9BD7-56D4B979EFE3">Guideline: Encode All Output Data
-</a></li><li><a href="?#ruledisplay:D06E3B85-CCD8-41EC-8861-36D30BBAE909">Guideline: Validate Input for Length, Range, Format, and Type
-</a></li><li><a href="?#ruledisplay:71225A92-ECA2-481E-ADEE-EA9C222DEA43">Guideline: Validate Input from All Sources
-</a></li></ul>
-]]></Data>
+  <h1>Additional Resources</h1>
+  <ul>
+    <li>For more information on AJAX including common vulnerabilities that are associated with the technology, see "Ajax Security Basics":
+<a href="http://www.securityfocus.com/infocus/1868">http://www.securityfocus.com/infocus/1868</a></li>
+  </ul>
+  <ul>
+    <li>For information on AJAX attacks and JavaScript Hijacking, see "JavaScript Hijacking":<span style="color:rgb(17,17,17); font-family:Calibri,Arial,Helvetica,sans-serif; font-size:small">&amp;nbsp;</span><a href="http://www.net-security.org/dl/articles/JavaScript_Hijacking.pdf" style="margin-top:0px; margin-right:0px; margin-bottom:0px; margin-left:0px; padding-top:0px; padding-right:0px; padding-bottom:0px; padding-left:0px; color:rgb(51,51,153); font-weight:bold; font-family:Calibri,Arial,Helvetica,sans-serif; font-size:small">http://www.net-security.org/dl/articles/JavaScript_Hijacking.pdf</a></li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/ec178496-024d-4b3c-8381-8db94767e539">Attack: Cross Site Scripting Attack</a>
+    </li>
+    <li>
+      <a href="/article/c97da133-1150-4789-9d18-73ba221a4fba">Attack: Command Injection Attack</a>
+    </li>
+    <li>
+      <a href="?#685CA8C0-E102-4517-A539-4B826D1962EB">Attack: Double Encoding Attack</a>
+    </li>
+    <li>
+      <a href="?#3EB8979E-59F0-4C2B-8D8A-CFB173E5D66B">Attack: HTTP Session Hijacking Attack</a>
+    </li>
+    <li>
+      <a href="/article/73777936-5891-48b0-a3e8-71663e3429a1">Attack: XML Injection Attack</a>
+    </li>
+    <li>
+      <a href="/article/21a9dbc2-dc93-46ea-b8a6-61e8398940c6">Guideline: Validate All Data Passed Between Native and Java Code
+</a>
+    </li>
+    <li>
+      <a href="/article/320f3578-7231-41d3-be4b-db79957bd496">Guideline: Do Not Rely on Request Validation
+</a>
+    </li>
+    <li>
+      <a href="/article/280d4fb4-9004-4304-8d93-a41b583f86cf">Guideline: Do Not Rely on Client-Side Validation
+</a>
+    </li>
+    <li>
+      <a href="/article/4880b800-8273-4ef5-b094-efa3d09e6e10">Guideline: Encode All Output Data
+</a>
+    </li>
+    <li>
+      <a href="/article/75bd5893-aa69-4d39-8cc8-004cee54aaae">Guideline: Validate Input for Length, Range, Format, and Type
+</a>
+    </li>
+    <li>
+      <a href="/article/ae57fb40-a7ab-428e-9ed1-6624d4ae8181">Guideline: Validate Input from All Sources
+</a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

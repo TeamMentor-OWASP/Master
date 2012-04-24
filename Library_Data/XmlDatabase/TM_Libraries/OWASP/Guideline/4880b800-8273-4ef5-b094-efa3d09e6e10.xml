@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="-1556968893" Content_Hash="934498104">
   <Metadata>
     <Id>4880b800-8273-4ef5-b094-efa3d09e6e10</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Encode All Output Data</Title>
     <Category>Input and Data Validation</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,107 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>Applies to</h1><p>Applications written using Servlets or JSP.</p><h1>What to Do</h1><p>Encode all input that is displayed back to the user.</p><h1>Why</h1><p>Encoding echoed input prevents injection attacks such as cross-site scripting.</p><h1>When</h1><p>If user input will be echoed back to the client in any way, encode it first. This includes input that is immediately echoed back as well as input that is stored first (such as in a database) before being echoed back later.</p><h1>How</h1><p>Encoding the echoed user input prevents injection attacks such as cross-site scripting. Use the following steps to ensure all echoed input is encoded:</p><ol><li><p><strong>Identify all echoed input. </strong>Locate all places inside your application where user-supplied data will be returned to the client. Such data can be of reflective or persistent nature:</p><ul><li><strong>Reflective</strong>: In a reflective setting, the input is immediately returned to the client. For example, search engines present the searched query when displaying the results. </li><li><strong>Persistent</strong>: In a persistent setting, the input is stored and returned to the client at a different stage in your application. For example, message boards store the users' posts inside a database and return them when a given topic is viewed.</li></ul></li><li><p><strong>Determine the&nbsp;type of encoding. </strong>After identifying all echoed input, determine how the input is returned to client. Because input can take the form of HTML content or URLs, your application needs to use different encoding techniques:</p><ul><li><p><strong>URL encoding</strong>: URL encoding allows your application to maintain the original URL, yet display it to the user in a non-malicious way. Because HTTP headers allow a substitution schema, all characters/symbols are preserved by displaying their ASCII codes instead of the actual character/symbol. For example, <strong>&lt;</strong> is represented by <strong>%3C</strong> where <strong>3C</strong> is the ASCII value for <strong>&lt;</strong>:</p><blockquote><pre>String encodedUrl = URLEncoder.encode(url);</pre></blockquote></li><li><p><strong>HTML encoding</strong>: HTML encoding is used when the echoed input is returned as regular text or HTML content. Input should be encoded by substituting certain characters with their respective HTML values:</p><blockquote><table><tbody><tr><td>Character</td><td>HTML value</td></tr><tr><td>&lt;</td><td>&amp;lt;</td></tr><tr><td>&gt;</td><td>&amp;gt;</td></tr><tr><td>&amp;</td><td>&amp;amp;</td></tr><tr><td>"</td><td>&amp;quot;</td></tr></tbody></table></blockquote><p>JSP can also HTML encode a string through the use of <strong>{ }</strong> around the variable. <strong>{ }</strong> invoke JSP's built-in HTML encoder which takes the variable between the brackets as its input. Example: </p><blockquote><pre>&lt;%= {output} %&gt;</pre></blockquote></li></ul></li><li><p><strong>Apply the encoding. </strong>After identifying the echoed input and determining the appropriate encoding method, apply the encoding before the input is returned to the client.</p></li></ol><h1>Problem Example</h1><p>The following code produces a data analysis based on a financial index. Because it does not HTML encode the echoed input, the application is vulnerable to reflective cross-site scripting.</p><blockquote><pre>import java.io.*;<br>import java.util.*;<br>import java.lang.*;<br>import javax.servlet.*;<br>import javax.servlet.http.*;<br>import java.util.regex.*;<br> public final class DataAggregator extends HttpServlet<br>{<br>      public void doGet<br>             (<br>            HttpServletRequest request,<br>             HttpServletResponse response<br>            )<br>            throws ServletException, IOException<br>      {<br>            PrintWriter out = response.getWriter();<br>            String searchTerm = request.getParameter("index");<br>             try<br>            {<br>                  if (validateSearchTerm(searchTerm))<br>                  {<br>                        String retString;<br>                         retString = "The queried index \"";<br>                         // The application does not HTML encode<br>                         //     the returned input<br>                        retString += searchTerm;<br>                         retString += "\" results in:&lt;br&gt; ";<br>                        out.println(retString);<br>                        common.aggregateData(out, searchTerm);<br>                  }<br>                  else<br>                  {<br>                        // Add appropriate logging and exception handling<br>                         // mechanisms. Consult the Exception Handling and<br>                         // Logging sections<br>                         out.println("Unable to process at the moment."<br>                                 + " Please try again later.");<br>                  }<br>            }<br>             catch (Exception e)<br>            {<br>                  // Add the appropriate logging and exception handling<br>                   // mechanisms. Consult the Exception Handling<br>                   // and Logging sections<br>                   out.println("Unable to process at the moment."<br>                           + " Please try again later.");<br>            }<br>             out.flush();<br>            out.close();<br>      }<br>}</pre></blockquote><h1>Solution Example</h1><p>The following code produces a data analysis based on a financial index. Because the code HTML encodes the echoed input, it is impossible for an attacker to exploit the application via reflective cross-site scripting.</p><blockquote><pre>import java.io.*;<br>import java.util.*;<br>import java.lang.*;<br>import javax.servlet.*;<br>import javax.servlet.http.*;<br>import java.util.regex.*;<br> public final class DataAggregator extends HttpServlet<br>{<br>      public void doGet<br>      (<br>        HttpServletRequest request,<br>         HttpServletResponse response<br>      )<br>            throws ServletException, IOException<br>      {<br>            PrintWriter out = response.getWriter();<br>            String searchTerm = request.getParameter("index");<br>             try<br>            {<br>                  if (validateSearchTerm(searchTerm))<br>                  {<br>                        String retString;<br>                         retString = "The queried index \"";<br>                         // The application HTML encodes the echoed input<br>                        retString += encodeHtml(searchTerm);<br>                         retString += "\" results in :&lt;br&gt; ";<br>                        out.println(retString);<br>                        common.aggregateData(out, searchTerm);<br>                  }<br>                  else<br>                  {<br>                        // Add the appropriate logging and exception<br>                         // handling mechanisms. Consult the Exception<br>                         // Handling and Logging sections<br>                         out.println("Unable to process at the moment."<br>                                 + " Please try again later.");<br>                  }<br>            }<br>            catch (Exception e)<br>            {<br>                  // Add the appropriate logging and exception<br>                   // handling mechanisms. Consult the Exception<br>                   // Handling and Logging sections<br>                   out.println("Unable to process at the moment."<br>                           + " Please try again later.");<br>            }             out.flush();<br>            out.close();<br>      }<br>       public String encodeHtml(String input)<br>      {<br>            StringBuffer out = new StringBuffer();<br>             for (int i = 0; i &lt; input.length(); i++)<br>            {<br>                  char c = input.charAt(i);<br>                  if (c == '&lt;')<br>                  {<br>                        out.append("&amp;lt;");<br>                  }<br>                  else if (c == '&gt;')<br>                  {<br>                        out.append("&amp;gt;");<br>                  }<br>                  else if (c == '\"')<br>                  {<br>                        out.append("&amp;quot;");<br>                  }<br>                  else if (c == '\'')<br>                  {<br>                        out.append("&amp;quot;");<br>                  }<br>                  else if (c == '&amp;')<br>                  {<br>                        out.append("&amp;amp;");<br>                  }<br>                  else if (c &gt; 0x20 &amp;&amp; c &lt; 0x126)<br>                  {<br>                        out.append(c);<br>                  }<br>                  else<br>                  {<br>                        out.append("&amp;#" + (int)c + ";");<br>                  }<br>            }<br>             return out.toString();<br>      }<br>}</pre></blockquote><h1>Additional Resources</h1><ul><li>To learn more about preventing cross-site scripting, see: <a href="http://support.microsoft.com/kb/252985">How to prevent cross-site scripting security issues</a>.</li></ul><h1>Related Items</h1><ul><li><a href="ruledisplay:BC10DCE2-CA48-44BF-8BF6-FEFBE8DCCB7E">Attack: Cross Site Scripting Attack</a> </li><li><a href="ruledisplay:2B17E816-C6C4-4B05-BE92-01DC71073F66">Attack: Response Splitting Attack</a> </li><li><a href="ruledisplay:198CBDAF-3F87-4291-870D-8B6F077D8D36">Attack: AJAX Injection Attack</a> </li><li><a href="ruledisplay:D4DBB48C-D394-4632-B72F-148BCD87E9D9">Checklist Item: All Output Data is Encoded (Java Web Application)</a> </li></ul>]]></Data>
+    <Data><![CDATA[<h1>Applies to</h1>
+  <p>Applications written using Servlets or JSP.</p>
+  <h1>What to Do</h1>
+  <p>Encode all input that is displayed back to the user.</p>
+  <h1>Why</h1>
+  <p>Encoding echoed input prevents injection attacks such as cross-site scripting.</p>
+  <h1>When</h1>
+  <p>If user input will be echoed back to the client in any way, encode it first. This includes input that is immediately echoed back as well as input that is stored first (such as in a database) before being echoed back later.</p>
+  <h1>How</h1>
+  <p>Encoding the echoed user input prevents injection attacks such as cross-site scripting. Use the following steps to ensure all echoed input is encoded:</p>
+  <ol>
+    <li>
+      <p>
+        <strong>Identify all echoed input. </strong>Locate all places inside your application where user-supplied data will be returned to the client. Such data can be of reflective or persistent nature:</p>
+      <ul>
+        <li>
+          <strong>Reflective</strong>: In a reflective setting, the input is immediately returned to the client. For example, search engines present the searched query when displaying the results. </li>
+        <li>
+          <strong>Persistent</strong>: In a persistent setting, the input is stored and returned to the client at a different stage in your application. For example, message boards store the users' posts inside a database and return them when a given topic is viewed.</li>
+      </ul>
+    </li>
+    <li>
+      <p>
+        <strong>Determine the&amp;nbsp;type of encoding. </strong>After identifying all echoed input, determine how the input is returned to client. Because input can take the form of HTML content or URLs, your application needs to use different encoding techniques:</p>
+      <ul>
+        <li>
+          <p>
+            <strong>URL encoding</strong>: URL encoding allows your application to maintain the original URL, yet display it to the user in a non-malicious way. Because HTTP headers allow a substitution schema, all characters/symbols are preserved by displaying their ASCII codes instead of the actual character/symbol. For example, <strong>&lt;</strong> is represented by <strong>%3C</strong> where <strong>3C</strong> is the ASCII value for <strong>&lt;</strong>:</p>
+          <blockquote>
+            <pre>String encodedUrl = URLEncoder.encode(url);</pre>
+          </blockquote>
+        </li>
+        <li>
+          <p>
+            <strong>HTML encoding</strong>: HTML encoding is used when the echoed input is returned as regular text or HTML content. Input should be encoded by substituting certain characters with their respective HTML values:</p>
+          <blockquote>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Character</td>
+                  <td>HTML value</td>
+                </tr>
+                <tr>
+                  <td>&lt;</td>
+                  <td>&amp;lt;</td>
+                </tr>
+                <tr>
+                  <td>&gt;</td>
+                  <td>&amp;gt;</td>
+                </tr>
+                <tr>
+                  <td>&amp;</td>
+                  <td>&amp;amp;</td>
+                </tr>
+                <tr>
+                  <td>"</td>
+                  <td>&amp;quot;</td>
+                </tr>
+              </tbody>
+            </table>
+          </blockquote>
+          <p>JSP can also HTML encode a string through the use of <strong>{ }</strong> around the variable. <strong>{ }</strong> invoke JSP's built-in HTML encoder which takes the variable between the brackets as its input. Example: </p>
+          <blockquote>
+            <pre>&lt;%= {output} %&gt;</pre>
+          </blockquote>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <p>
+        <strong>Apply the encoding. </strong>After identifying the echoed input and determining the appropriate encoding method, apply the encoding before the input is returned to the client.</p>
+    </li>
+  </ol>
+  <h1>Problem Example</h1>
+  <p>The following code produces a data analysis based on a financial index. Because it does not HTML encode the echoed input, the application is vulnerable to reflective cross-site scripting.</p>
+  <blockquote>
+    <pre>import java.io.*;<br />import java.util.*;<br />import java.lang.*;<br />import javax.servlet.*;<br />import javax.servlet.http.*;<br />import java.util.regex.*;<br /> public final class DataAggregator extends HttpServlet<br />{<br />      public void doGet<br />             (<br />            HttpServletRequest request,<br />             HttpServletResponse response<br />            )<br />            throws ServletException, IOException<br />      {<br />            PrintWriter out = response.getWriter();<br />            String searchTerm = request.getParameter("index");<br />             try<br />            {<br />                  if (validateSearchTerm(searchTerm))<br />                  {<br />                        String retString;<br />                         retString = "The queried index \"";<br />                         // The application does not HTML encode<br />                         //     the returned input<br />                        retString += searchTerm;<br />                         retString += "\" results in:&lt;br&gt; ";<br />                        out.println(retString);<br />                        common.aggregateData(out, searchTerm);<br />                  }<br />                  else<br />                  {<br />                        // Add appropriate logging and exception handling<br />                         // mechanisms. Consult the Exception Handling and<br />                         // Logging sections<br />                         out.println("Unable to process at the moment."<br />                                 + " Please try again later.");<br />                  }<br />            }<br />             catch (Exception e)<br />            {<br />                  // Add the appropriate logging and exception handling<br />                   // mechanisms. Consult the Exception Handling<br />                   // and Logging sections<br />                   out.println("Unable to process at the moment."<br />                           + " Please try again later.");<br />            }<br />             out.flush();<br />            out.close();<br />      }<br />}</pre>
+  </blockquote>
+  <h1>Solution Example</h1>
+  <p>The following code produces a data analysis based on a financial index. Because the code HTML encodes the echoed input, it is impossible for an attacker to exploit the application via reflective cross-site scripting.</p>
+  <blockquote>
+    <pre>import java.io.*;<br />import java.util.*;<br />import java.lang.*;<br />import javax.servlet.*;<br />import javax.servlet.http.*;<br />import java.util.regex.*;<br /> public final class DataAggregator extends HttpServlet<br />{<br />      public void doGet<br />      (<br />        HttpServletRequest request,<br />         HttpServletResponse response<br />      )<br />            throws ServletException, IOException<br />      {<br />            PrintWriter out = response.getWriter();<br />            String searchTerm = request.getParameter("index");<br />             try<br />            {<br />                  if (validateSearchTerm(searchTerm))<br />                  {<br />                        String retString;<br />                         retString = "The queried index \"";<br />                         // The application HTML encodes the echoed input<br />                        retString += encodeHtml(searchTerm);<br />                         retString += "\" results in :&lt;br&gt; ";<br />                        out.println(retString);<br />                        common.aggregateData(out, searchTerm);<br />                  }<br />                  else<br />                  {<br />                        // Add the appropriate logging and exception<br />                         // handling mechanisms. Consult the Exception<br />                         // Handling and Logging sections<br />                         out.println("Unable to process at the moment."<br />                                 + " Please try again later.");<br />                  }<br />            }<br />            catch (Exception e)<br />            {<br />                  // Add the appropriate logging and exception<br />                   // handling mechanisms. Consult the Exception<br />                   // Handling and Logging sections<br />                   out.println("Unable to process at the moment."<br />                           + " Please try again later.");<br />            }             out.flush();<br />            out.close();<br />      }<br />       public String encodeHtml(String input)<br />      {<br />            StringBuffer out = new StringBuffer();<br />             for (int i = 0; i &lt; input.length(); i++)<br />            {<br />                  char c = input.charAt(i);<br />                  if (c == '&lt;')<br />                  {<br />                        out.append("&amp;lt;");<br />                  }<br />                  else if (c == '&gt;')<br />                  {<br />                        out.append("&amp;gt;");<br />                  }<br />                  else if (c == '\"')<br />                  {<br />                        out.append("&amp;quot;");<br />                  }<br />                  else if (c == '\'')<br />                  {<br />                        out.append("&amp;quot;");<br />                  }<br />                  else if (c == '&amp;')<br />                  {<br />                        out.append("&amp;amp;");<br />                  }<br />                  else if (c &gt; 0x20 &amp;&amp; c &lt; 0x126)<br />                  {<br />                        out.append(c);<br />                  }<br />                  else<br />                  {<br />                        out.append("&amp;#" + (int)c + ";");<br />                  }<br />            }<br />             return out.toString();<br />      }<br />}</pre>
+  </blockquote>
+  <h1>Additional Resources</h1>
+  <ul>
+    <li>To learn more about preventing cross-site scripting, see: <a href="http://support.microsoft.com/kb/252985">How to prevent cross-site scripting security issues</a>.</li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/ec178496-024d-4b3c-8381-8db94767e539">Attack: Cross Site Scripting Attack</a>
+    </li>
+    <li>
+      <a href="2B17E816-C6C4-4B05-BE92-01DC71073F66">Attack: Response Splitting Attack</a>
+    </li>
+    <li>
+      <a href="/article/16c073b9-e951-4f25-a282-e867d2d808f7">Attack: AJAX Injection Attack</a>
+    </li>
+    <li>
+      <a href="D4DBB48C-D394-4632-B72F-148BCD87E9D9">Checklist Item: All Output Data is Encoded (Java Web Application)</a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

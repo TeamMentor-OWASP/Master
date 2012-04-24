@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="-1373719704" Content_Hash="763854212">
   <Metadata>
     <Id>65a24726-461b-452d-ac91-cfbfad841419</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Encrypt Communication Links</Title>
     <Category>Communication Security</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,160 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>What to Do</h1><p>Encrypt the communication channels when interacting with other software across the network.</p><h1>Why</h1><p>Encrypting the communication links allows the application to preserve confidentiality and integrity of the transmitted data.</p><h1>When</h1><p>If sensitive data must be transmitted between two hosts. The transmission could be between servers or between a client and a server.</p><h1>How</h1><p>To encrypt the communication links:</p><ol><li><p><strong>Identify the connections used for transmitting sensitive data.</strong> Enumerate all connections between the different entities. Identify the sensitive data that is sent over the network and the respective connections that are used for such communication. </p></li><li><p><strong>Choose the appropriate encryption mechanism.</strong> Depending on the infrastructure, you may consider using IPSec or TLS/SSL.</p><ul><li><p><strong>IPSec.</strong> IPSec is used when the encryption needs to be applied across all involved parties. Because IPSec is designed to secure connections between static hosts that are "always on", use IPSec to secure the network connections between your application's servers. Use the following steps to utilize IPSec:</p><ol><li><p><strong>Create an IP Filter.</strong> This restricts what computers can communicate with each other, and require that specific communication protocols are used. A filter consists of:</p><ul><li>A source IP address or range of addresses. </li><li>A destination IP address or range of addresses. </li><li>An IP protocol, such as TCP, UDP, or "any." </li><li>Source and destination ports (for TCP or UDP only).</li></ul></li><li><p><strong>Create Filter Actions.</strong> This procedure creates two filter actions. The first will be used to block all communications from specified computers and the second will be used to enforce the use of encryption between application server and database server computers.</p></li><li><p><strong>Create Rules.</strong> This procedure creates two new rules that will be used to associate the filter that you created in Procedure 1, with the two filter actions you created in Procedure 2.</p></li><li><p><strong>Export the IPSec Policy to the Remote Computer.</strong> The IPSec policy that you have created on the database server must now be exported and copied to the application server computer.</p></li><li><p><strong>Assign Policies.</strong> An IPSec policy must be assigned before it becomes active. Note that only one policy may be active at any one time on a particular computer.</p></li><li><p><strong>Verify that it Works.</strong> Use Network Monitor (netmon.exe) to verify that data sent between the two servers is encrypted.</p></li></ol></li><li><p><strong>TLS/SSL.</strong> TLS/SSL provides granular protection. This allows the traffic containing sensitive data only to be encrypted. Because TLS/SSL has a certificate based design, it allows the protection of data between mobile hosts. Use TLS/SSL to secure the communication channel between your application and its users. While .NET provides APIs for handling SSL encrypted traffic, it is recommended to follow the manuals associated with any third party software that is being used. If your application uses SSL, ensure that you use SSL 3.0 and disable the cryptographically weak SSL 2.0 protocols.</p><p>Use the following steps to configure IIS for using SSL:</p><ol><li><p><strong>Create a certificate request. </strong>Using the IIS management console, generate an SSL certificate request. This request is then sent to a Certification Authority to be signed. Follow these steps to generate the certificate request. </p><ol><li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li><li>Right click on your application's virtual host and select <strong>Properties</strong>. </li><li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li><li>Select <strong>Create a new certificate</strong> and click <strong>Next</strong>. </li><li>Select <strong>Prepare the request now, but send it later</strong> and click <strong>Next</strong>. </li><li>Provide <strong>your application's FQDN</strong> and the desired bit length for your SSL certificate's encryption key, and then click <strong>Next</strong>. </li><li>Provide <strong>your organization's details</strong> and click <strong>Next</strong>. </li><li>Provide <strong>your application's FQDN</strong> and click <strong>Next</strong>. </li><li>Provide <strong>your organization's location details</strong> and click <strong>Next</strong>. </li><li>Specify the location where you would like the IIS management console to store your application's certificate request. </li><li>Click <strong>Finish</strong> to complete the process.</li></ol></li><li><p><strong>Present the request to a Certification Authority (CA).</strong> If all conditions for obtaining an SSL certificate are met, the CA will produce a new SSL certificate based on the certificate request. Because the requirements for obtaining an SSL certificate depend on the Certification Authority, consult with the Certification Authority in regards to the administrative steps necessary for obtaining such certificate.</p></li><li><p><strong>Install the certificate.</strong> Follow these steps to properly install your application's SSL certificate.</p><ol><li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li><li>Right click on your application's virtual host and select <strong>Properties</strong>. </li><li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li><li>Select <strong>Process the pending request and install the certificate</strong> and click <strong>Next</strong>. </li><li>Specify the location of your application's SSL certificate and click <strong>Next</strong>. </li><li>Click <strong>Finish</strong> to complete the process. </li></ol></li></ol></li></ul></li><li><p><strong>Apply the appropriate encryption mechanism. </strong>Apply the encryption mechanism of choice at the appropriate locations in the code. Such locations include all functionality that establishes a connection between your application and another entity.</p></li></ol><h1>Problem Example</h1><p>The following code establishes a connection between two servers. Unfortunately, the communication is not encrypted and it is possible for an attacker to eavesdrop on the connection.</p><pre>public Stream Connect(string remoteHost, int remotePort)<br>{<br>    TcpClient client = new TcpClient(remoteHost, remotePort);<br>    NetworkStream netStream = client.GetStream();<br>    return netStream;<br>}</pre><h1>Solution Example</h1><p>The following code establishes a connection between two servers. Because the communication is encrypted the confidentiality of the data in transit is preserved and it is impossible for an attacker to eavesdrop on the connection.</p><pre>public Stream Connect(string remoteHost, int remotePort)<br>{<br>    TcpClient client = new TcpClient(remoteHost, remotePort);<br>    SslStream netStream = new SslStream(client.GetStream(), false,<br>               new RemoteCertificateValidationCallback(this.ValidateSSLCertificate));<br>    try<br>    {<br>        netStream.AuthenticateAsClient(remoteHost);<br>    }<br>    catch (AuthenticationException ae)<br>    {<br>        client.Close();<br>        throw ae;<br>    }<br>    return netStream;<br>}</pre><h1>Additional Resources</h1><ul><li>For more information about TLS, see: RFC for <a href="http://www.faqs.org/rfcs/rfc2246.html">Transport Layer Security</a>. </li><li>For a quick overview on IPSec, see: A publication on <a href="http://www.digisafe.com/products/pdf/IPSec_Primer.pdf">IPSec Primer</a>. </li><li>To learn more about using IPSec in a server farm, see: <a href="http://msdn2.microsoft.com/en-us/library/aa302413.aspx">How To: Use IPSec to Provide Secure Communication Between Two Servers</a>. </li><li>For more information about uses of IPSec, see: <a href="http://msdn2.microsoft.com/en-us/library/aa302366.aspx">How To: Use IPSec for Filtering Ports and Authentication</a>. </li><li>For more information about using IPSec for managing your server farm, see: <a href="http://support.microsoft.com/kb/816521">How To: Use IPSec Policy to Secure Terminal Services Communications in Windows Server 2003</a>.</li></ul><h1>Related Items</h1><ul><li><a href="ruledisplay:FCB0A4AC-A559-430D-9145-08340EC73FED">Guideline: Protect Sensitive Data Over the Network </a></li><li><a href="ruledisplay:B9E7568A-907C-43C9-9CED-F0CCA09F76CB">Guideline: Use SSL When Transmitting Credentials </a></li><li><a href="ruledisplay:48BB4D3A-9295-4263-B3E7-090E483DEC5D">Attack: Man in the Middle Attack</a> </li><li><a href="ruledisplay:4572037A-2166-4AD1-8E73-D623E468A7B9">Attack: Information Disclosure Attack</a> </li><li><a href="ruledisplay:CBB29250-7ED3-4FDD-9B28-E3EE07EAF911">Attack: HTTP Replay Attack</a> </li><li><a href="ruledisplay:DEBB5734-39D0-4922-BDEE-1E0547E22DAD">Attack: Chosen Plaintext Attack</a> </li><li><a href="ruledisplay:3B657A67-F660-4DB5-9267-6E0FE2DAA1EB">Attack: Chosen Ciphertext Attack</a> </li><li><a href="ruledisplay:13EE90D9-B0F6-45D6-913A-BA8527525A04">Attack: Traffic Analysis Attack</a> </li><li><a href="ruledisplay:24D078E3-A02F-4EDF-A6EA-DA0E3E5FFE5E">Attack: Key Bruteforce Attack</a> </li><li><a href="ruledisplay:B446B34C-8DEC-4F74-A392-C30D1719D90D">Attack: Trust Relationship Attack</a> </li><li><a href="ruledisplay:9E3FC30A-B55C-4AF6-8B77-A534C6F87197">Attack: Phishing Attack</a> </li><li><a href="ruledisplay:F4F69A8F-F164-4821-89D3-B49571922848">Checklist Item: Communication Links are Encrypted</a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance.</p>]]></Data>
+    <Data><![CDATA[<h1>What to Do</h1>
+  <p>Encrypt the communication channels when interacting with other software across the network.</p>
+  <h1>Why</h1>
+  <p>Encrypting the communication links allows the application to preserve confidentiality and integrity of the transmitted data.</p>
+  <h1>When</h1>
+  <p>If sensitive data must be transmitted between two hosts. The transmission could be between servers or between a client and a server.</p>
+  <h1>How</h1>
+  <p>To encrypt the communication links:</p>
+  <ol>
+    <li>
+      <p>
+        <strong>Identify the connections used for transmitting sensitive data.</strong> Enumerate all connections between the different entities. Identify the sensitive data that is sent over the network and the respective connections that are used for such communication. </p>
+    </li>
+    <li>
+      <p>
+        <strong>Choose the appropriate encryption mechanism.</strong> Depending on the infrastructure, you may consider using IPSec or TLS/SSL.</p>
+      <ul>
+        <li>
+          <p>
+            <strong>IPSec.</strong> IPSec is used when the encryption needs to be applied across all involved parties. Because IPSec is designed to secure connections between static hosts that are "always on", use IPSec to secure the network connections between your application's servers. Use the following steps to utilize IPSec:</p>
+          <ol>
+            <li>
+              <p>
+                <strong>Create an IP Filter.</strong> This restricts what computers can communicate with each other, and require that specific communication protocols are used. A filter consists of:</p>
+              <ul>
+                <li>A source IP address or range of addresses. </li>
+                <li>A destination IP address or range of addresses. </li>
+                <li>An IP protocol, such as TCP, UDP, or "any." </li>
+                <li>Source and destination ports (for TCP or UDP only).</li>
+              </ul>
+            </li>
+            <li>
+              <p>
+                <strong>Create Filter Actions.</strong> This procedure creates two filter actions. The first will be used to block all communications from specified computers and the second will be used to enforce the use of encryption between application server and database server computers.</p>
+            </li>
+            <li>
+              <p>
+                <strong>Create Rules.</strong> This procedure creates two new rules that will be used to associate the filter that you created in Procedure 1, with the two filter actions you created in Procedure 2.</p>
+            </li>
+            <li>
+              <p>
+                <strong>Export the IPSec Policy to the Remote Computer.</strong> The IPSec policy that you have created on the database server must now be exported and copied to the application server computer.</p>
+            </li>
+            <li>
+              <p>
+                <strong>Assign Policies.</strong> An IPSec policy must be assigned before it becomes active. Note that only one policy may be active at any one time on a particular computer.</p>
+            </li>
+            <li>
+              <p>
+                <strong>Verify that it Works.</strong> Use Network Monitor (netmon.exe) to verify that data sent between the two servers is encrypted.</p>
+            </li>
+          </ol>
+        </li>
+        <li>
+          <p>
+            <strong>TLS/SSL.</strong> TLS/SSL provides granular protection. This allows the traffic containing sensitive data only to be encrypted. Because TLS/SSL has a certificate based design, it allows the protection of data between mobile hosts. Use TLS/SSL to secure the communication channel between your application and its users. While .NET provides APIs for handling SSL encrypted traffic, it is recommended to follow the manuals associated with any third party software that is being used. If your application uses SSL, ensure that you use SSL 3.0 and disable the cryptographically weak SSL 2.0 protocols.</p>
+          <p>Use the following steps to configure IIS for using SSL:</p>
+          <ol>
+            <li>
+              <p>
+                <strong>Create a certificate request. </strong>Using the IIS management console, generate an SSL certificate request. This request is then sent to a Certification Authority to be signed. Follow these steps to generate the certificate request. </p>
+              <ol>
+                <li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li>
+                <li>Right click on your application's virtual host and select <strong>Properties</strong>. </li>
+                <li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li>
+                <li>Select <strong>Create a new certificate</strong> and click <strong>Next</strong>. </li>
+                <li>Select <strong>Prepare the request now, but send it later</strong> and click <strong>Next</strong>. </li>
+                <li>Provide <strong>your application's FQDN</strong> and the desired bit length for your SSL certificate's encryption key, and then click <strong>Next</strong>. </li>
+                <li>Provide <strong>your organization's details</strong> and click <strong>Next</strong>. </li>
+                <li>Provide <strong>your application's FQDN</strong> and click <strong>Next</strong>. </li>
+                <li>Provide <strong>your organization's location details</strong> and click <strong>Next</strong>. </li>
+                <li>Specify the location where you would like the IIS management console to store your application's certificate request. </li>
+                <li>Click <strong>Finish</strong> to complete the process.</li>
+              </ol>
+            </li>
+            <li>
+              <p>
+                <strong>Present the request to a Certification Authority (CA).</strong> If all conditions for obtaining an SSL certificate are met, the CA will produce a new SSL certificate based on the certificate request. Because the requirements for obtaining an SSL certificate depend on the Certification Authority, consult with the Certification Authority in regards to the administrative steps necessary for obtaining such certificate.</p>
+            </li>
+            <li>
+              <p>
+                <strong>Install the certificate.</strong> Follow these steps to properly install your application's SSL certificate.</p>
+              <ol>
+                <li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li>
+                <li>Right click on your application's virtual host and select <strong>Properties</strong>. </li>
+                <li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li>
+                <li>Select <strong>Process the pending request and install the certificate</strong> and click <strong>Next</strong>. </li>
+                <li>Specify the location of your application's SSL certificate and click <strong>Next</strong>. </li>
+                <li>Click <strong>Finish</strong> to complete the process. </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <p>
+        <strong>Apply the appropriate encryption mechanism. </strong>Apply the encryption mechanism of choice at the appropriate locations in the code. Such locations include all functionality that establishes a connection between your application and another entity.</p>
+    </li>
+  </ol>
+  <h1>Problem Example</h1>
+  <p>The following code establishes a connection between two servers. Unfortunately, the communication is not encrypted and it is possible for an attacker to eavesdrop on the connection.</p>
+  <pre>public Stream Connect(string remoteHost, int remotePort)<br />{<br />    TcpClient client = new TcpClient(remoteHost, remotePort);<br />    NetworkStream netStream = client.GetStream();<br />    return netStream;<br />}</pre>
+  <h1>Solution Example</h1>
+  <p>The following code establishes a connection between two servers. Because the communication is encrypted the confidentiality of the data in transit is preserved and it is impossible for an attacker to eavesdrop on the connection.</p>
+  <pre>public Stream Connect(string remoteHost, int remotePort)<br />{<br />    TcpClient client = new TcpClient(remoteHost, remotePort);<br />    SslStream netStream = new SslStream(client.GetStream(), false,<br />               new RemoteCertificateValidationCallback(this.ValidateSSLCertificate));<br />    try<br />    {<br />        netStream.AuthenticateAsClient(remoteHost);<br />    }<br />    catch (AuthenticationException ae)<br />    {<br />        client.Close();<br />        throw ae;<br />    }<br />    return netStream;<br />}</pre>
+  <h1>Additional Resources</h1>
+  <ul>
+    <li>For more information about TLS, see: RFC for <a href="http://www.faqs.org/rfcs/rfc2246.html">Transport Layer Security</a>. </li>
+    <li>For a quick overview on IPSec, see: A publication on <a href="http://www.digisafe.com/products/pdf/IPSec_Primer.pdf">IPSec Primer</a>. </li>
+    <li>To learn more about using IPSec in a server farm, see: <a href="http://msdn2.microsoft.com/en-us/library/aa302413.aspx">How To: Use IPSec to Provide Secure Communication Between Two Servers</a>. </li>
+    <li>For more information about uses of IPSec, see: <a href="http://msdn2.microsoft.com/en-us/library/aa302366.aspx">How To: Use IPSec for Filtering Ports and Authentication</a>. </li>
+    <li>For more information about using IPSec for managing your server farm, see: <a href="http://support.microsoft.com/kb/816521">How To: Use IPSec Policy to Secure Terminal Services Communications in Windows Server 2003</a>.</li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/a94e0193-b5ab-43e0-b6b1-8e7f0ce69206">Guideline: Protect Sensitive Data Over the Network </a>
+    </li>
+    <li>
+      <a href="/article/c463b66b-1319-48c7-9f96-51f1254b4d93">Guideline: Use SSL When Transmitting Credentials </a>
+    </li>
+    <li>
+      <a href="48BB4D3A-9295-4263-B3E7-090E483DEC5D">Attack: Man in the Middle Attack</a>
+    </li>
+    <li>
+      <a href="4572037A-2166-4AD1-8E73-D623E468A7B9">Attack: Information Disclosure Attack</a>
+    </li>
+    <li>
+      <a href="CBB29250-7ED3-4FDD-9B28-E3EE07EAF911">Attack: HTTP Replay Attack</a>
+    </li>
+    <li>
+      <a href="/article/bb645071-1c9b-48cc-9622-ac3285e2c6d5">Attack: Chosen Plaintext Attack</a>
+    </li>
+    <li>
+      <a href="/article/b0bbf434-dc63-49ac-a400-b6dc0c766316">Attack: Chosen Ciphertext Attack</a>
+    </li>
+    <li>
+      <a href="13EE90D9-B0F6-45D6-913A-BA8527525A04">Attack: Traffic Analysis Attack</a>
+    </li>
+    <li>
+      <a href="24D078E3-A02F-4EDF-A6EA-DA0E3E5FFE5E">Attack: Key Bruteforce Attack</a>
+    </li>
+    <li>
+      <a href="B446B34C-8DEC-4F74-A392-C30D1719D90D">Attack: Trust Relationship Attack</a>
+    </li>
+    <li>
+      <a href="/article/9b3fc217-8a85-4d4d-8e13-3a0963be6703">Attack: Phishing Attack</a>
+    </li>
+    <li>
+      <a href="/article/26ca24fa-2c72-4482-80e3-7de6e8eb013d">Checklist Item: Communication Links are Encrypted</a>
+    </li>
+  </ul>
+  <hr />
+  <p>Adapted from Microsoft patterns &amp; practices guidance.</p>]]></Data>
   </Content>
 </TeamMentor_Article>

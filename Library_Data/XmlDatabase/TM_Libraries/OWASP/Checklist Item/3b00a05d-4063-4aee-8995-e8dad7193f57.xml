@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="847256792" Content_Hash="1629047280">
   <Metadata>
     <Id>3b00a05d-4063-4aee-8995-e8dad7193f57</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Hashed Password Format Is Specified in Membership Provider Configuration</Title>
     <Category>Authentication</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,15 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>What to Check For</h1><p>Ensure that hashed password format is specified in provider configuration.</p><h1>Related Items</h1><ul><li><a href="ruledisplay:385e4669-6c74-4cfa-b94f-5fcc754a263f">Specify Hashed Password Format in Provider Configuration</a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+    <Data><![CDATA[<h1>What to Check For</h1>
+  <p>Ensure that hashed password format is specified in provider configuration.</p>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/1e86ab18-716e-4761-b3f9-6ababeee2511">Specify Hashed Password Format in Provider Configuration</a>
+    </li>
+  </ul>
+  <hr />
+  <p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
   </Content>
 </TeamMentor_Article>

@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="-1144832239" Content_Hash="-899946418">
   <Metadata>
     <Id>fea6be3f-5d03-4400-b4a6-c23db56863a3</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Use Stored Procedures</Title>
     <Category>Data Access</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,79 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>Applies to</h1><ul><li>Applications written using Servlets or JSP.</li></ul><h1>What to Do</h1><p>Always use stored procedures when interacting with a database. This increases performance and reduces the risk of a successful SQL injection attack.</p><h1>Why</h1><p>Attackers can use a <a href="ruledisplay:1D4FA7AF-33F0-40D9-9665-A31DBF3D7764">SQL Injection Attack</a> to manipulate the database in unforeseen ways. SQL injection allows an attacker to assume the credentials of the SQL account used to connect to the database, which may lead to arbitrary reading, writing, updating or deleting of data. In an improperly secured database, this can also lead to remote code execution through the use of certain stored procedures that allow for direct Operating System command injection.</p><h1>When</h1><p>Stored procedures should be used whenever interaction with a database is required.</p><h1>How</h1><ol><li><strong>Create the stored procedure on the database. </strong>This can be done using the following SQL syntax:<br><br>Since stored procedures reside on the database server, you need to create the appropriate stored procedures on your application's database server. The following example creates a stored procedure on an Oracle database server: </li><blockquote><blockquote><pre>CREATE OR REPLACE PROCEDURE<br> PlaceOrder(custID INT, itemID INT, qty INT)<br> ISBEGIN<br>   INSERT INTO PendingPurchases (customer, item, quantity)<br>    VALUES (custID, itemID, qty);END PlaceOrder;</pre></blockquote></blockquote><li><div><strong>Call the stored procedure. </strong>This can be done&nbsp;using the following Java code:</div></li><blockquote><blockquote><pre>Connection cn = MyApp.getDBConnection();<br>PreparedStatement st = cn.prepareStatement("exec PlaceOrder(?, ?, ?);");<br>st.setInt(1, custID);<br>st.setInt(2, itemID);<br>st.setInt(3, qty);<br>ResultSet rs = st.executeQuery();</pre></blockquote></blockquote><li><div><strong>Assign the appropriate permissions. </strong>Once you have created the stored procedure, assign the appropriate permissions on the database server. Using the example above, allow your application to execute <strong>PlaceOrder</strong> and deny it access to <strong>PendingPurchases</strong>. Example:</div></li><br><blockquote><blockquote><pre>REVOKE ALL ON PendingPurchases FROM myapp;<br>GRANT EXECUTE ON PlaceOrder TO myapp;</pre></blockquote></blockquote><ul></ul></ol><h1>Problem Example</h1><p>The following code places a new order into the application's backend database. Because the application does not use stored procedures, the developers need to grant extra priviliges to the application to allow it to directly manipulate data inside the <strong>PendingPurchases</strong> table.</p><blockquote><pre>Connection cn = MyApp.getDBConnection();<br>PreparedStatement st = cn.prepareStatement("insert into PendingPurchases "<br>                      + "(customer, item, quantity) values (?, ?, ?);");<br>st.setInt(1, custID);st.setInt(2, itemID);st.setInt(3, qty);</pre></blockquote><h1>Solution Example</h1><p>The following code places a new order into the application's backend database. Because the application uses stored procedures, the developers can allow the application to manipulate the data inside <strong>PendingPurchases</strong> without giving permissions to directly do so, therefore, further restricting the set of operations that the application can execute on the database server.</p><blockquote><pre>Connection cn = MyApp.getDBConnection();<br>PreparedStatement st = cn.prepareStatement("exec PlaceOrder(?, ?, ?);");<br>st.setInt(1, custID);st.setInt(2, itemID);st.setInt(3, qty);</pre></blockquote><h1>Additional Resources</h1><ul><li>To learn more about stored procedures, visit: <a href="http://en.wikipedia.org/wiki/Stored_procedure">Stored procedure</a>. </li><li>To learn more about the PL/SQL syntax and stored procedures, visit: <a href="http://download-uk.oracle.com/docs/cd/B19306_01/appdev.102/b14261/toc.htm">Oracle Database PL/SQL User's Guide and Reference</a>.</li></ul><h1>Related Items</h1><ul><li><a href="ruledisplay:9DF701E2-7929-4533-9DC3-368AAC4E553D">Guideline: Use Type Safe SQL Parameters When Constructing SQL Queries (Java Web Application)</a> </li><li><a href="ruledisplay:81491E66-67B7-49F3-BDA6-4B4C9245C702">Guideline: Validate All Input Passed to Database (Java Web Application)</a> </li><li><a href="ruledisplay:8515588C-661A-4962-853F-6CD6ABCD8CF6">Attack: Server-Side Code Injection Attack</a> </li><li><a href="ruledisplay:1D4FA7AF-33F0-40D9-9665-A31DBF3D7764">Attack: SQL Injection Attack</a> </li><li><a href="ruledisplay:AA3B4801-99BA-43B0-90A6-D38A605E8574">Checklist Item: Type Safe SQL Parameters are Used (Java Web Application)</a> </li></ul>]]></Data>
+    <Data><![CDATA[<h1>Applies to</h1>
+  <ul>
+    <li>Applications written using Servlets or JSP.</li>
+  </ul>
+  <h1>What to Do</h1>
+  <p>Always use stored procedures when interacting with a database. This increases performance and reduces the risk of a successful SQL injection attack.</p>
+  <h1>Why</h1>
+  <p>Attackers can use a <a href="/article/4e2f567c-e829-4710-9e2d-861757fb1854">SQL Injection Attack</a> to manipulate the database in unforeseen ways. SQL injection allows an attacker to assume the credentials of the SQL account used to connect to the database, which may lead to arbitrary reading, writing, updating or deleting of data. In an improperly secured database, this can also lead to remote code execution through the use of certain stored procedures that allow for direct Operating System command injection.</p>
+  <h1>When</h1>
+  <p>Stored procedures should be used whenever interaction with a database is required.</p>
+  <h1>How</h1>
+  <ol>
+    <li>
+      <strong>Create the stored procedure on the database. </strong>This can be done using the following SQL syntax:<br /><br />Since stored procedures reside on the database server, you need to create the appropriate stored procedures on your application's database server. The following example creates a stored procedure on an Oracle database server: </li>
+    <blockquote>
+      <blockquote>
+        <pre>CREATE OR REPLACE PROCEDURE<br /> PlaceOrder(custID INT, itemID INT, qty INT)<br /> ISBEGIN<br />   INSERT INTO PendingPurchases (customer, item, quantity)<br />    VALUES (custID, itemID, qty);END PlaceOrder;</pre>
+      </blockquote>
+    </blockquote>
+    <li>
+      <div>
+        <strong>Call the stored procedure. </strong>This can be done&amp;nbsp;using the following Java code:</div>
+    </li>
+    <blockquote>
+      <blockquote>
+        <pre>Connection cn = MyApp.getDBConnection();<br />PreparedStatement st = cn.prepareStatement("exec PlaceOrder(?, ?, ?);");<br />st.setInt(1, custID);<br />st.setInt(2, itemID);<br />st.setInt(3, qty);<br />ResultSet rs = st.executeQuery();</pre>
+      </blockquote>
+    </blockquote>
+    <li>
+      <div>
+        <strong>Assign the appropriate permissions. </strong>Once you have created the stored procedure, assign the appropriate permissions on the database server. Using the example above, allow your application to execute <strong>PlaceOrder</strong> and deny it access to <strong>PendingPurchases</strong>. Example:</div>
+    </li>
+    <br />
+    <blockquote>
+      <blockquote>
+        <pre>REVOKE ALL ON PendingPurchases FROM myapp;<br />GRANT EXECUTE ON PlaceOrder TO myapp;</pre>
+      </blockquote>
+    </blockquote>
+    <ul>
+    </ul>
+  </ol>
+  <h1>Problem Example</h1>
+  <p>The following code places a new order into the application's backend database. Because the application does not use stored procedures, the developers need to grant extra priviliges to the application to allow it to directly manipulate data inside the <strong>PendingPurchases</strong> table.</p>
+  <blockquote>
+    <pre>Connection cn = MyApp.getDBConnection();<br />PreparedStatement st = cn.prepareStatement("insert into PendingPurchases "<br />                      + "(customer, item, quantity) values (?, ?, ?);");<br />st.setInt(1, custID);st.setInt(2, itemID);st.setInt(3, qty);</pre>
+  </blockquote>
+  <h1>Solution Example</h1>
+  <p>The following code places a new order into the application's backend database. Because the application uses stored procedures, the developers can allow the application to manipulate the data inside <strong>PendingPurchases</strong> without giving permissions to directly do so, therefore, further restricting the set of operations that the application can execute on the database server.</p>
+  <blockquote>
+    <pre>Connection cn = MyApp.getDBConnection();<br />PreparedStatement st = cn.prepareStatement("exec PlaceOrder(?, ?, ?);");<br />st.setInt(1, custID);st.setInt(2, itemID);st.setInt(3, qty);</pre>
+  </blockquote>
+  <h1>Additional Resources</h1>
+  <ul>
+    <li>To learn more about stored procedures, visit: <a href="http://en.wikipedia.org/wiki/Stored_procedure">Stored procedure</a>. </li>
+    <li>To learn more about the PL/SQL syntax and stored procedures, visit: <a href="http://download-uk.oracle.com/docs/cd/B19306_01/appdev.102/b14261/toc.htm">Oracle Database PL/SQL User's Guide and Reference</a>.</li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="9DF701E2-7929-4533-9DC3-368AAC4E553D">Guideline: Use Type Safe SQL Parameters When Constructing SQL Queries (Java Web Application)</a>
+    </li>
+    <li>
+      <a href="81491E66-67B7-49F3-BDA6-4B4C9245C702">Guideline: Validate All Input Passed to Database (Java Web Application)</a>
+    </li>
+    <li>
+      <a href="8515588C-661A-4962-853F-6CD6ABCD8CF6">Attack: Server-Side Code Injection Attack</a>
+    </li>
+    <li>
+      <a href="/article/4e2f567c-e829-4710-9e2d-861757fb1854">Attack: SQL Injection Attack</a>
+    </li>
+    <li>
+      <a href="AA3B4801-99BA-43B0-90A6-D38A605E8574">Checklist Item: Type Safe SQL Parameters are Used (Java Web Application)</a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

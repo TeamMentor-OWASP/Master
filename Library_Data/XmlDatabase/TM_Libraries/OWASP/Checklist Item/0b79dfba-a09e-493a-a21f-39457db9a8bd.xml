@@ -16,6 +16,6 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>What to Check For</h1><p>Ensure that absolute URLs are used for navigation where the site is partitioned with secure and non-secure folders.</p><h1>Related Items</h1><ul><li><a href="ruledisplay:ddb23ab5-617f-46ec-adee-7c34e4bebf79">Use Absolute URLs for Navigation Where a Site is Partitioned into Secure and Insecure Folders</a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+    <Data><![CDATA[<h1>What to Check For</h1><p>Ensure that absolute URLs are used for navigation where the site is partitioned with secure and non-secure folders.</p><h1>Related Items</h1><ul><li><a href="ddb23ab5-617f-46ec-adee-7c34e4bebf79">Use Absolute URLs for Navigation Where a Site is Partitioned into Secure and Insecure Folders</a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
   </Content>
 </TeamMentor_Article>

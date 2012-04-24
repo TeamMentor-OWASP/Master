@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="-1181787752" Content_Hash="-779411543">
   <Metadata>
     <Id>c491ef3a-b339-49ab-8291-f13de1f5187c</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Cross Site Request Forgery Attack</Title>
     <Category>Application State</Category>
     <Phase>Any</Phase>
@@ -16,6 +16,79 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<br><br><h1>Applies To</h1><p>All web applications.</p><h1>Description</h1><p>A Cross Site Request Forgery attack occurs when an attacker tricks a victim into loading a page that contains a malicious request. This request may be able to change the state of the web application and is possible because the request is sent in the context of the logged in victim. For many sites each request automatically sends the victim's credentials such as the session cookie or authentication credentials. Due to this fact there is no way to distinguish the false request from a legitimate request.</p><p>Cross Site Request Forgery attacks are known by other names including XSRF, Session Riding, One-Click and Zero-Click attacks. </p><p>A One-Click attack refers to a link that causes a malicious action to be performed when a victim clicks on it. A Zero-Click attack is automatically executed upon page load. A common way to perform a zero-click attack is to embed the request in the source of an image.</p><h1>Impact</h1><p><strong>Elevation of privilege</strong> - the attacker can execute commands on the web application on behalf of the victim</p><h1>Vulnerabilities</h1><p>Executing single requests that can change the state of the application, such as add users, change account balances or passwords, etc.</p><h1>Countermeasures</h1><ul><li>Add a session identifier or nonce value to each session and/or viewstate to track each request. </li><li>Use "double submit" cookies (for Ajax requests only). </li><li>Minimize single request GET commands. </li><li>Never allow a single request to change the state of the web application.</li></ul><h1>Example</h1><p>If the application allows a user to change the state of the application in a single request this attack is possible. In this example the web application allows a logged in administrator to create a new user sending a single GET request.</p><p>This GET request looks like this:</p><pre>GET http://teammentorexample.com/adduser.aspx?username=joe&amp;password=1234&amp;usertype=userHTTP/1.1</pre><p>The attacker discovers that this request will create a new user and creates his own request which he embeds in an e-mail with the following image tag:</p><pre>&lt;img src="http://teammentorexample.com/adduser.aspx?username=HACKER&amp;password=TEST&amp;usertype=admin" /&gt;</pre><p>When the victim's e-mail client attempts to download the image located at the above source the request is made without the knowledge of the victim. </p><p>The application should require a two step authorization mechanism for any change to server state. In this example the server should send the client a nonce value to verify the admin would indeed like to add this user. The admin would have to verify the action on a separate page and return the nonce value. Only after the server receives the action and verifies the nonce should the user be created. </p><h1>Additional Resources</h1><p>To learn more about CSRF attacks, see:</p><ul><li><a href="http://www.owasp.org/index.php/Cross-Site_Request_Forgery">http://www.owasp.org/index.php/Cross-Site_Request_Forgery</a> </li><li><a href="http://www.cgisecurity.com/articles/csrf-faq.shtml">http://www.cgisecurity.com/articles/csrf-faq.shtml</a> </li><li><a href="http://www.owasp.org/index.php/Testing_for_CSRF">http://www.owasp.org/index.php/Testing_for_CSRF</a></li></ul><h1>Related Items</h1><ul><li><a href="ruledisplay:9E3FC30A-B55C-4AF6-8B77-A534C6F87197">Attack: Phishing Attack</a> </li><li><a href="ruledisplay:BC10DCE2-CA48-44BF-8BF6-FEFBE8DCCB7E">Attack: Cross Site Scripting Attack</a> </li><li><a href="ruledisplay:5582C496-8E58-4EF8-86EA-D0E565197525">Attack: Reflection Attack</a> </li><li><a href="ruledisplay:5B0B4683-2F43-4F71-8DF4-121013673B4C">Attack: URL Redirection Attack</a> </li><li><a href="ruledisplay:198CBDAF-3F87-4291-870D-8B6F077D8D36">Attack: AJAX Injection Attack</a> </li><li><a href="ruledisplay:3EB8979E-59F0-4C2B-8D8A-CFB173E5D66B">Attack: HTTP Session Hijacking Attack</a> </li><li><a href="ruledisplay:48BB4D3A-9295-4263-B3E7-090E483DEC5D">Attack: Man in the Middle Attack</a> </li><li><a href="ruledisplay:ECAF57F9-0C13-4FC2-B298-811A706BED8F">Guideline: Do Not Place Sensitive Data in Parameters </a></li><li><a href="ruledisplay:04A281E9-1078-48B4-ABBC-74CB259F8C92">Guideline: Use Page.ViewStateUserKey to Counter Cross Site Request Forgery Attacks </a></li><li><a href="ruledisplay:BB960347-F2E9-4926-8B75-ECCEE36D3EE8">Guideline: Protect Session Cookies </a></li></ul>]]></Data>
+    <Data><![CDATA[<br />
+  <br />
+  <h1>Applies To</h1>
+  <p>All web applications.</p>
+  <h1>Description</h1>
+  <p>A Cross Site Request Forgery attack occurs when an attacker tricks a victim into loading a page that contains a malicious request. This request may be able to change the state of the web application and is possible because the request is sent in the context of the logged in victim. For many sites each request automatically sends the victim's credentials such as the session cookie or authentication credentials. Due to this fact there is no way to distinguish the false request from a legitimate request.</p>
+  <p>Cross Site Request Forgery attacks are known by other names including XSRF, Session Riding, One-Click and Zero-Click attacks. </p>
+  <p>A One-Click attack refers to a link that causes a malicious action to be performed when a victim clicks on it. A Zero-Click attack is automatically executed upon page load. A common way to perform a zero-click attack is to embed the request in the source of an image.</p>
+  <h1>Impact</h1>
+  <p>
+    <strong>Elevation of privilege</strong> - the attacker can execute commands on the web application on behalf of the victim</p>
+  <h1>Vulnerabilities</h1>
+  <p>Executing single requests that can change the state of the application, such as add users, change account balances or passwords, etc.</p>
+  <h1>Countermeasures</h1>
+  <ul>
+    <li>Add a session identifier or nonce value to each session and/or viewstate to track each request. </li>
+    <li>Use "double submit" cookies (for Ajax requests only). </li>
+    <li>Minimize single request GET commands. </li>
+    <li>Never allow a single request to change the state of the web application.</li>
+  </ul>
+  <h1>Example</h1>
+  <p>If the application allows a user to change the state of the application in a single request this attack is possible. In this example the web application allows a logged in administrator to create a new user sending a single GET request.</p>
+  <p>This GET request looks like this:</p>
+  <pre>GET http://teammentorexample.com/adduser.aspx?username=joe&amp;password=1234&amp;usertype=userHTTP/1.1</pre>
+  <p>The attacker discovers that this request will create a new user and creates his own request which he embeds in an e-mail with the following image tag:</p>
+  <pre>&lt;img src="http://teammentorexample.com/adduser.aspx?username=HACKER&amp;password=TEST&amp;usertype=admin" /&gt;</pre>
+  <p>When the victim's e-mail client attempts to download the image located at the above source the request is made without the knowledge of the victim. </p>
+  <p>The application should require a two step authorization mechanism for any change to server state. In this example the server should send the client a nonce value to verify the admin would indeed like to add this user. The admin would have to verify the action on a separate page and return the nonce value. Only after the server receives the action and verifies the nonce should the user be created. </p>
+  <h1>Additional Resources</h1>
+  <p>To learn more about CSRF attacks, see:</p>
+  <ul>
+    <li>
+      <a href="http://www.owasp.org/index.php/Cross-Site_Request_Forgery">http://www.owasp.org/index.php/Cross-Site_Request_Forgery</a>
+    </li>
+    <li>
+      <a href="http://www.cgisecurity.com/articles/csrf-faq.shtml">http://www.cgisecurity.com/articles/csrf-faq.shtml</a>
+    </li>
+    <li>
+      <a href="http://www.owasp.org/index.php/Testing_for_CSRF">http://www.owasp.org/index.php/Testing_for_CSRF</a>
+    </li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/9b3fc217-8a85-4d4d-8e13-3a0963be6703">Attack: Phishing Attack</a>
+    </li>
+    <li>
+      <a href="/article/ec178496-024d-4b3c-8381-8db94767e539">Attack: Cross Site Scripting Attack</a>
+    </li>
+    <li>
+      <a href="5582C496-8E58-4EF8-86EA-D0E565197525">Attack: Reflection Attack</a>
+    </li>
+    <li>
+      <a href="/article/bfc48dfe-4235-4eaf-b290-f418a11ec876">Attack: URL Redirection Attack</a>
+    </li>
+    <li>
+      <a href="/article/16c073b9-e951-4f25-a282-e867d2d808f7">Attack: AJAX Injection Attack</a>
+    </li>
+    <li>
+      <a href="3EB8979E-59F0-4C2B-8D8A-CFB173E5D66B">Attack: HTTP Session Hijacking Attack</a>
+    </li>
+    <li>
+      <a href="48BB4D3A-9295-4263-B3E7-090E483DEC5D">Attack: Man in the Middle Attack</a>
+    </li>
+    <li>
+      <a href="ECAF57F9-0C13-4FC2-B298-811A706BED8F">Guideline: Do Not Place Sensitive Data in Parameters </a>
+    </li>
+    <li>
+      <a href="04A281E9-1078-48B4-ABBC-74CB259F8C92">Guideline: Use Page.ViewStateUserKey to Counter Cross Site Request Forgery Attacks </a>
+    </li>
+    <li>
+      <a href="/article/f1ef60f9-6ec3-445d-a624-3a37c970ea41">Guideline: Protect Session Cookies </a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

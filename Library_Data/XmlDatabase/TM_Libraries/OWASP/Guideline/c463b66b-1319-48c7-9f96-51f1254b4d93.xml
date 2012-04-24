@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="918187836" Content_Hash="-1987412892">
   <Metadata>
     <Id>c463b66b-1319-48c7-9f96-51f1254b4d93</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Use SSL When Transmitting Credentials</Title>
     <Category>Authentication</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,89 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>What to Do</h1><p>Use Secure Sockets Layer (SSL) to protect the authentication credentials passed between browser and server.</p><h1>Why</h1><p>Using SSL prevents the credentials from being sniffed or tampered with as they are transmitted over the network. If SSL is not used, user credentials may be compromised by attacks such as a <a href="ruledisplay:B47A6486-A73E-44B9-AD17-1F7F94199828">Network Credential Sniffing Attack</a> or a <a href="ruledisplay:9E3FC30A-B55C-4AF6-8B77-A534C6F87197">Phishing Attack</a>. Additionally, use the <a href="ruledisplay:BB960347-F2E9-4926-8B75-ECCEE36D3EE8">Protect Session Cookies</a> guideline to minimize the risk of exposing your application's session cookies to an attacker.</p><h1>When</h1><p>If your application accepts form-based authentication credentials from users.</p><h1>How</h1><p>Using Secure Socket Layer (SSL) over HTTP requires the following steps:</p><ol><li><p><strong>Create a certificate request.</strong> Using the IIS management console, generate an SSL certificate request. This request is then sent to a Certification Authority to be signed. Follow these steps to generate the certificate request.</p><ol><li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li><li>Right click on your application's virtual host and select <strong>Properties</strong>. </li><li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li><li>Select <strong>Create a new certificate</strong> and click <strong>Next</strong>. </li><li>Select <strong>Prepare the request now, but send it later</strong> and click <strong>Next</strong>. </li><li>Provide <strong>your application's FQDN</strong> and the desired bit length for your SSL certificate's encryption key, and then click <strong>Next</strong>. </li><li>Provide <strong>your organization's details</strong> and click <strong>Next</strong>. </li><li>Provide <strong>your application's FQDN</strong> and click <strong>Next</strong>. </li><li>Provide <strong>your organization's location details</strong> and click <strong>Next</strong>. </li><li>Specify the location where you would like the IIS management console to store your application's certificate request. </li><li>Click <strong>Finish</strong> to complete the process.</li></ol></li><li><p><strong>Present the request to a Certification Authority (CA).</strong> If all conditions for obtaining an SSL certificate are met, the CA will produce a new SSL certificate based on the certificate request. Because the requirements for obtaining an SSL certificate depend on the Certification Authority, consult with the Certification Authority in regards to the administrative steps necessary for obtaining such certificate.</p></li><li><p><strong>Install the certificate.</strong> Follow these steps to properly install your application's SSL certificate.</p><ol><li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li><li>Right click on your application's virtual host and select <strong>Properties</strong>. </li><li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li><li>Select <strong>Process the pending request and install the certificate</strong> and click <strong>Next</strong>. </li><li>Specify the location of your application's SSL certificate and click <strong>Next</strong>. </li><li>Click <strong>Finish</strong> to complete the process. </li></ol></li><li><strong>Ensure credentials are sent over SSL. </strong>Place the authentication portion of your application on a dedicated subdomain. Configure the server to accept only HTTPS traffic for the authentication subdomain. Ensure that form posts containing credentials are sent over HTTPS. You can enforce your application's use SSL through several approaches: <ul><li><p><strong>Server configuration.</strong> Using the IIS management console, configure IIS to use SSL for all HTTP requests. Follow these steps to enable this option:</p><ol><li>Start the IIS management console. To do this, click on Control Panel -&gt; Administrative Tools -&gt; Internet Information Services. </li><li>Right click on your application's virtual host and select Properties. </li><li>Select the Directory Security tab. </li><li>Click Edit in the Secure Communications dialog. </li><li>Select Require Secure Channel (SSL) and click OK. </li><li>Click OK to apply the changes and close the property window. </li><li>Browse to http://&lt;your application's FQDN&gt;//. Verify that you receive the following error message: <pre>HTTP 403.4 - Forbidden: SSL required.</pre></li></ol></li><li><p><strong>Programatically.</strong> Use the following considerations to improve your application's use of SSL:</p><ul><li><p><strong>absolute URLs</strong>: Use absolute URL paths when making form requests. Example:</p><pre>&lt;form method="POST" action="https://login.example.com/myapp/login.aspx"&gt;</pre></li><li><p><strong>requireSSL attribute</strong>: In your application's <strong>web.config</strong>, set the secure property by using <strong>requireSSL="true"</strong> on the <strong>&lt;forms&gt;</strong> element as follows:</p><pre>&lt;authentication mode="Forms"&gt;<br>   &lt;forms loginUrl=<a href="https://login.example.com/myapp/login.aspx">https://login.example.com/myapp/login.aspx</a><br>           requireSSL="true"<br>           ...<br>   /&gt;<br>&lt;/authentication&gt;</pre></li></ul></li></ul></li></ol><h1>Problem Example</h1><p>The following snippet is part of an application's web.config. The application uses form based authentication and has configured its &lt;forms&gt; element accordingly. Unfortunately, the &lt;forms&gt; element does not have the requireSSL attribute set to true. Therefore the application fails to enforce the use of SSL when performing form-based authentication.</p><pre>&lt;!-- The forms element does not have a requireSSL attribute --&gt;<br>&lt;forms loginUrl="Secure/Login.aspx"<br>       protection="All"<br>       timeout="00:30:00" <br>       slidingExpiration="true"<br>       name="MyApp"<br>       path="/Secure"<br> /&gt;</pre><h1>Solution Example</h1><p>The following snippet is part of an application's web.config. The application uses form based authentication and has configured its &lt;forms&gt; element accordingly. Because the &lt;forms&gt; element has the requireSSL attribute set to true, all form-based authentication will be performed over an HTTPS connection.</p><pre>&lt;!-- The forms element has the requireSSL attribute set to true --&gt;<br>&lt;forms loginUrl="Secure/Login.aspx"<br>       protection="All"<br>       <strong>requireSSL="true"<br></strong>       timeout="00:30:00"<br>       slidingExpiration="true"<br>       name="MyApp"<br>       path="/Secure"<br> /&gt;</pre><h1>Additional Resources</h1><ul><li>For more information on using SSL with IIS, visit: <a href="http://support.microsoft.com/kb/299875">How to implement SSL in IIS</a>.</li></ul><h1>Related Items</h1><ul><li><a href="ruledisplay:FCB0A4AC-A559-430D-9145-08340EC73FED">Guideline: Protect Sensitive Data Over the Network </a></li><li><a href="ruledisplay:BB960347-F2E9-4926-8B75-ECCEE36D3EE8">Guideline: Protect Session Cookies </a></li><li><a href="ruledisplay:B47A6486-A73E-44B9-AD17-1F7F94199828">Attack: Network Credential Sniffing Attack</a> </li><li><a href="ruledisplay:9E3FC30A-B55C-4AF6-8B77-A534C6F87197">Attack: Phishing Attack</a> </li><li><a href="ruledisplay:4572037A-2166-4AD1-8E73-D623E468A7B9">Attack: Information Disclosure Attack</a> </li><li><a href="ruledisplay:B446B34C-8DEC-4F74-A392-C30D1719D90D">Attack: Trust Relationship Attack</a> </li><li><a href="ruledisplay:48BB4D3A-9295-4263-B3E7-090E483DEC5D">Attack: Man in the Middle Attack</a> </li><li><a href="ruledisplay:5CDA1EF2-79F3-4167-8E8F-E47E4B0A607A">Checklist Item: SSL is Used when Transmitting Credentials </a></li></ul><hr><p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
+    <Data><![CDATA[<h1>What to Do</h1>
+  <p>Use Secure Sockets Layer (SSL) to protect the authentication credentials passed between browser and server.</p>
+  <h1>Why</h1>
+  <p>Using SSL prevents the credentials from being sniffed or tampered with as they are transmitted over the network. If SSL is not used, user credentials may be compromised by attacks such as a <a href="B47A6486-A73E-44B9-AD17-1F7F94199828">Network Credential Sniffing Attack</a> or a <a href="/article/9b3fc217-8a85-4d4d-8e13-3a0963be6703">Phishing Attack</a>. Additionally, use the <a href="/article/f1ef60f9-6ec3-445d-a624-3a37c970ea41">Protect Session Cookies</a> guideline to minimize the risk of exposing your application's session cookies to an attacker.</p>
+  <h1>When</h1>
+  <p>If your application accepts form-based authentication credentials from users.</p>
+  <h1>How</h1>
+  <p>Using Secure Socket Layer (SSL) over HTTP requires the following steps:</p>
+  <ol>
+    <li>
+      <p>
+        <strong>Create a certificate request.</strong> Using the IIS management console, generate an SSL certificate request. This request is then sent to a Certification Authority to be signed. Follow these steps to generate the certificate request.</p>
+      <ol>
+        <li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li>
+        <li>Right click on your application's virtual host and select <strong>Properties</strong>. </li>
+        <li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li>
+        <li>Select <strong>Create a new certificate</strong> and click <strong>Next</strong>. </li>
+        <li>Select <strong>Prepare the request now, but send it later</strong> and click <strong>Next</strong>. </li>
+        <li>Provide <strong>your application's FQDN</strong> and the desired bit length for your SSL certificate's encryption key, and then click <strong>Next</strong>. </li>
+        <li>Provide <strong>your organization's details</strong> and click <strong>Next</strong>. </li>
+        <li>Provide <strong>your application's FQDN</strong> and click <strong>Next</strong>. </li>
+        <li>Provide <strong>your organization's location details</strong> and click <strong>Next</strong>. </li>
+        <li>Specify the location where you would like the IIS management console to store your application's certificate request. </li>
+        <li>Click <strong>Finish</strong> to complete the process.</li>
+      </ol>
+    </li>
+    <li>
+      <p>
+        <strong>Present the request to a Certification Authority (CA).</strong> If all conditions for obtaining an SSL certificate are met, the CA will produce a new SSL certificate based on the certificate request. Because the requirements for obtaining an SSL certificate depend on the Certification Authority, consult with the Certification Authority in regards to the administrative steps necessary for obtaining such certificate.</p>
+    </li>
+    <li>
+      <p>
+        <strong>Install the certificate.</strong> Follow these steps to properly install your application's SSL certificate.</p>
+      <ol>
+        <li>Start the <strong>IIS management console</strong>. To do this, click on <strong>Control Panel</strong> -&gt; <strong>Administrative Tools</strong> -&gt; <strong>Internet Information Services</strong>. </li>
+        <li>Right click on your application's virtual host and select <strong>Properties</strong>. </li>
+        <li>Click on <strong>Server Certificate</strong> under the <strong>Directory Security</strong> tab. </li>
+        <li>Select <strong>Process the pending request and install the certificate</strong> and click <strong>Next</strong>. </li>
+        <li>Specify the location of your application's SSL certificate and click <strong>Next</strong>. </li>
+        <li>Click <strong>Finish</strong> to complete the process. </li>
+      </ol>
+    </li>
+    <li>
+      <strong>Ensure credentials are sent over SSL. </strong>Place the authentication portion of your application on a dedicated subdomain. Configure the server to accept only HTTPS traffic for the authentication subdomain. Ensure that form posts containing credentials are sent over HTTPS. You can enforce your application's use SSL through several approaches: <ul><li><p><strong>Server configuration.</strong> Using the IIS management console, configure IIS to use SSL for all HTTP requests. Follow these steps to enable this option:</p><ol><li>Start the IIS management console. To do this, click on Control Panel -&gt; Administrative Tools -&gt; Internet Information Services. </li><li>Right click on your application's virtual host and select Properties. </li><li>Select the Directory Security tab. </li><li>Click Edit in the Secure Communications dialog. </li><li>Select Require Secure Channel (SSL) and click OK. </li><li>Click OK to apply the changes and close the property window. </li><li>Browse to http://&lt;your application's FQDN&gt;//. Verify that you receive the following error message: <pre>HTTP 403.4 - Forbidden: SSL required.</pre></li></ol></li><li><p><strong>Programatically.</strong> Use the following considerations to improve your application's use of SSL:</p><ul><li><p><strong>absolute URLs</strong>: Use absolute URL paths when making form requests. Example:</p><pre>&lt;form method="POST" action="https://login.example.com/myapp/login.aspx"&gt;</pre></li><li><p><strong>requireSSL attribute</strong>: In your application's <strong>web.config</strong>, set the secure property by using <strong>requireSSL="true"</strong> on the <strong>&lt;forms&gt;</strong> element as follows:</p><pre>&lt;authentication mode="Forms"&gt;<br />   &lt;forms loginUrl=<a href="https://login.example.com/myapp/login.aspx">https://login.example.com/myapp/login.aspx</a><br />           requireSSL="true"<br />           ...<br />   /&gt;<br />&lt;/authentication&gt;</pre></li></ul></li></ul></li>
+  </ol>
+  <h1>Problem Example</h1>
+  <p>The following snippet is part of an application's web.config. The application uses form based authentication and has configured its &lt;forms&gt; element accordingly. Unfortunately, the &lt;forms&gt; element does not have the requireSSL attribute set to true. Therefore the application fails to enforce the use of SSL when performing form-based authentication.</p>
+  <pre>&lt;!-- The forms element does not have a requireSSL attribute --&gt;<br />&lt;forms loginUrl="Secure/Login.aspx"<br />       protection="All"<br />       timeout="00:30:00" <br />       slidingExpiration="true"<br />       name="MyApp"<br />       path="/Secure"<br /> /&gt;</pre>
+  <h1>Solution Example</h1>
+  <p>The following snippet is part of an application's web.config. The application uses form based authentication and has configured its &lt;forms&gt; element accordingly. Because the &lt;forms&gt; element has the requireSSL attribute set to true, all form-based authentication will be performed over an HTTPS connection.</p>
+  <pre>&lt;!-- The forms element has the requireSSL attribute set to true --&gt;<br />&lt;forms loginUrl="Secure/Login.aspx"<br />       protection="All"<br /><strong>requireSSL="true"<br /></strong>       timeout="00:30:00"<br />       slidingExpiration="true"<br />       name="MyApp"<br />       path="/Secure"<br /> /&gt;</pre>
+  <h1>Additional Resources</h1>
+  <ul>
+    <li>For more information on using SSL with IIS, visit: <a href="http://support.microsoft.com/kb/299875">How to implement SSL in IIS</a>.</li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/a94e0193-b5ab-43e0-b6b1-8e7f0ce69206">Guideline: Protect Sensitive Data Over the Network </a>
+    </li>
+    <li>
+      <a href="/article/f1ef60f9-6ec3-445d-a624-3a37c970ea41">Guideline: Protect Session Cookies </a>
+    </li>
+    <li>
+      <a href="B47A6486-A73E-44B9-AD17-1F7F94199828">Attack: Network Credential Sniffing Attack</a>
+    </li>
+    <li>
+      <a href="/article/9b3fc217-8a85-4d4d-8e13-3a0963be6703">Attack: Phishing Attack</a>
+    </li>
+    <li>
+      <a href="4572037A-2166-4AD1-8E73-D623E468A7B9">Attack: Information Disclosure Attack</a>
+    </li>
+    <li>
+      <a href="B446B34C-8DEC-4F74-A392-C30D1719D90D">Attack: Trust Relationship Attack</a>
+    </li>
+    <li>
+      <a href="48BB4D3A-9295-4263-B3E7-090E483DEC5D">Attack: Man in the Middle Attack</a>
+    </li>
+    <li>
+      <a href="/article/53748e6e-6cf8-47cd-82bb-1681bf43bc44">Checklist Item: SSL is Used when Transmitting Credentials </a>
+    </li>
+  </ul>
+  <hr />
+  <p>Adapted from Microsoft patterns &amp; practices guidance. </p>]]></Data>
   </Content>
 </TeamMentor_Article>

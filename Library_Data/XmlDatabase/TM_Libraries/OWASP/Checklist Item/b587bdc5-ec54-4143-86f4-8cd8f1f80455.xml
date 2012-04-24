@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="-1614393734" Content_Hash="-753486886">
   <Metadata>
     <Id>b587bdc5-ec54-4143-86f4-8cd8f1f80455</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Input from All Sources Is Validated</Title>
     <Category>Input and Data Validation</Category>
     <Phase>Design</Phase>
@@ -16,6 +16,68 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<h1>What to Check For</h1><p>Check for input that has not been passed through a validation routine. All input from external sources should be validated.</p><h1>Why</h1><p>Input that is not validated can lead to cross-site scripting, SQL injection, directory traversals, and other vulnerabilities which would allow an attacker to gain unauthorized access to sensitive data.</p><h1>How to Check</h1><p>An application can take input via various ways such as a web interface, database, file system or other software running on the server. Use the following steps to establish a validation strategy:</p><ol><li><p><strong>Identify all sources of input.<br></strong>At design time identify all potential sources of input to your application. Once implemented, scour source code to discover sources of input that may have been missed in the design. Potential sources of input in a web application typically include:</p><ul><li>URL based parameters </li><li>Form based parameters </li><li>Hidden fields </li><li>Cookies </li><li>HTTP headers (Host, accept types, www authentication, cache settings, encodings, etc) </li><li>Local filesystem </li><li>Database </li><li>Other services running on the system </li><li>Javascript variables </li><li>File upload and attributes (filename, size, data, etc) </li><li>DNS results or host names </li><li>External component call return values (COM, AJAX, ActiveX) </li></ul><p>Once you know&nbsp;the types of input from where your application may receive data, look for all entry points. Good starting points are method parameters and assignment statements. For example: </p><p>This method uses the <strong>searchTerm</strong> variable:</p><blockquote><pre>void aggregateData(PrintWriter out, String searchTerm)<br> ...<br>double[] rData = common.queryDBForIndex(searchTerm);</pre></blockquote><p>This assignment stores data from a <strong>GET</strong> request parameter named <strong>index</strong> and stores it in the <strong>String searchTerm</strong>. Ensure that this input is validated:</p><blockquote><pre>String searchTerm = request.getParameter("index");</pre></blockquote><p>This assignment uses the input that was gathered above to store more input from a database. Verify that <strong>searchTerm</strong> is validated before this use, and also ensure that <strong>rData</strong> is validated as another source of input.</p><blockquote><pre>double[] rData = common.queryDBForIndex(searchTerm);</pre></blockquote></li><li><p><strong>Trace data from source to sink.<br></strong>Trace each source of input from the immediate source through your application to its final destination. The final sink may be in memory, on the hard drive, sent over the network or stored in a data store such as a database.</p></li><li><p><strong>Identify validation routines.<br></strong>Each input source should have a validation routine associated with it. Ideally the validation will occur as soon as the input reaches your application. Shared validation routines are better than creating many throughout the code base, so check for consolidation of routines to aid testing and reduce the chance of one-off bugs. If any input source does not have a validation routine associated with it, flag it for fixing.</p></li><li><p><strong>Ensure quality of validators.<br></strong>Validation routines should check for length, range, format and type. Validation should first check for good data through whitelisting then for known malicious data through blacklisting. Do not rely on client-side validation alone as it can be bypassed easily.<br><br>For more information see Checklist Item: <a href="ruledisplay:6D944640-22E7-421F-8192-45730D5118AB">Input is Validated for Length, Range, Format and Type</a>.</p></li></ol><h1>Problem Example</h1><p>The following code produces a data analysis based on a financial index. Unfortunately, the application validates the user's input but not the returned data from the database. Therefore, the application is vulnerable to an integer overflow that can harm the business logic used in generating the data analysis.</p><br><blockquote><pre>import java.io.*;<br>import java.util.*;<br>import java.lang.*;<br>import javax.servlet.*;<br>import javax.servlet.http.*;<br>import java.util.regex.*;<br> public final class DataAggregator extends HttpServlet<br>{<br>      public void doGet(HttpServletRequest request, HttpServletResponse response)<br>            throws ServletException, IOException<br>      {<br>            PrintWriter out = response.getWriter();<br>            String searchTerm = request.getParameter("index");<br>             try<br>            {<br>                  // The application validates the user-supplied input<br>                  if (validateSearchTerm(searchTerm))<br>                  {<br>                        String retString;<br>                        retString = "The queried index \"";<br>                        retString += encodeHtml(searchTerm);<br>                        retString += "\" produced the following results:&lt;br&gt; ";<br>                        out.println(retString);<br>                        aggregateData(out, searchTerm);<br>                  }<br>                  else<br>                  {<br>                        // Add the appropriate logging and exception handling<br>                        // mechanisms. Consult the Exception Handling and<br>                        // Logging sections<br>                        out.println("We cannot handle your request at the moment."<br>                                 + " Please try again later.");<br>                  }<br>            }<br>             catch (Exception e)<br>            {<br>                   // Add the appropriate logging and exception handling<br>                   // mechanisms. Consult the Exception Handling and<br>                   // Logging sections<br>                   out.println("We cannot handle your request at the moment."<br>                           + " Please try again later.");<br>            }<br>             out.flush();<br>             out.close();<br>      }<br>       boolean validateSearchTerm(String input)<br>      {<br>            String goodPattern = "(\\w|\\d)+";<br>            int goodLength = 8;<br>             if (input == null)<br>            {<br>                  return false;<br>            }<br>             if(input.length() &gt; goodLength)<br>            {<br>                  return false;<br>            }<br>                        Pattern p = Pattern.compile(goodPattern);<br>            Matcher m = p.matcher(input);<br>                        if(!m.matches())<br>            {<br>                  return false;<br>            }<br>                        return true;<br>      }<br>       void aggregateData(PrintWriter out, String searchTerm)<br>      {<br>            double[] rData = common.queryDBForIndex(searchTerm);<br>             // The application fails to validate the returned<br>             // data from the database<br>             // Business logic that performs certain data analysis<br>      }<br>}</pre></blockquote><h1>Related Guideline</h1><ul><li><a href="ruledisplay:71225A92-ECA2-481E-ADEE-EA9C222DEA43">Guideline: Validate Input from All Sources (Java Web Application)</a> </li></ul>]]></Data>
+    <Data><![CDATA[<h1>What to Check For</h1>
+  <p>Check for input that has not been passed through a validation routine. All input from external sources should be validated.</p>
+  <h1>Why</h1>
+  <p>Input that is not validated can lead to cross-site scripting, SQL injection, directory traversals, and other vulnerabilities which would allow an attacker to gain unauthorized access to sensitive data.</p>
+  <h1>How to Check</h1>
+  <p>An application can take input via various ways such as a web interface, database, file system or other software running on the server. Use the following steps to establish a validation strategy:</p>
+  <ol>
+    <li>
+      <p>
+        <strong>Identify all sources of input.<br /></strong>At design time identify all potential sources of input to your application. Once implemented, scour source code to discover sources of input that may have been missed in the design. Potential sources of input in a web application typically include:</p>
+      <ul>
+        <li>URL based parameters </li>
+        <li>Form based parameters </li>
+        <li>Hidden fields </li>
+        <li>Cookies </li>
+        <li>HTTP headers (Host, accept types, www authentication, cache settings, encodings, etc) </li>
+        <li>Local filesystem </li>
+        <li>Database </li>
+        <li>Other services running on the system </li>
+        <li>Javascript variables </li>
+        <li>File upload and attributes (filename, size, data, etc) </li>
+        <li>DNS results or host names </li>
+        <li>External component call return values (COM, AJAX, ActiveX) </li>
+      </ul>
+      <p>Once you know&amp;nbsp;the types of input from where your application may receive data, look for all entry points. Good starting points are method parameters and assignment statements. For example: </p>
+      <p>This method uses the <strong>searchTerm</strong> variable:</p>
+      <blockquote>
+        <pre>void aggregateData(PrintWriter out, String searchTerm)<br /> ...<br />double[] rData = common.queryDBForIndex(searchTerm);</pre>
+      </blockquote>
+      <p>This assignment stores data from a <strong>GET</strong> request parameter named <strong>index</strong> and stores it in the <strong>String searchTerm</strong>. Ensure that this input is validated:</p>
+      <blockquote>
+        <pre>String searchTerm = request.getParameter("index");</pre>
+      </blockquote>
+      <p>This assignment uses the input that was gathered above to store more input from a database. Verify that <strong>searchTerm</strong> is validated before this use, and also ensure that <strong>rData</strong> is validated as another source of input.</p>
+      <blockquote>
+        <pre>double[] rData = common.queryDBForIndex(searchTerm);</pre>
+      </blockquote>
+    </li>
+    <li>
+      <p>
+        <strong>Trace data from source to sink.<br /></strong>Trace each source of input from the immediate source through your application to its final destination. The final sink may be in memory, on the hard drive, sent over the network or stored in a data store such as a database.</p>
+    </li>
+    <li>
+      <p>
+        <strong>Identify validation routines.<br /></strong>Each input source should have a validation routine associated with it. Ideally the validation will occur as soon as the input reaches your application. Shared validation routines are better than creating many throughout the code base, so check for consolidation of routines to aid testing and reduce the chance of one-off bugs. If any input source does not have a validation routine associated with it, flag it for fixing.</p>
+    </li>
+    <li>
+      <p>
+        <strong>Ensure quality of validators.<br /></strong>Validation routines should check for length, range, format and type. Validation should first check for good data through whitelisting then for known malicious data through blacklisting. Do not rely on client-side validation alone as it can be bypassed easily.<br /><br />For more information see Checklist Item: <a href="/article/4cb21920-fa93-4f33-a2a3-aca8bbed2dad">Input is Validated for Length, Range, Format and Type</a>.</p>
+    </li>
+  </ol>
+  <h1>Problem Example</h1>
+  <p>The following code produces a data analysis based on a financial index. Unfortunately, the application validates the user's input but not the returned data from the database. Therefore, the application is vulnerable to an integer overflow that can harm the business logic used in generating the data analysis.</p>
+  <br />
+  <blockquote>
+    <pre>import java.io.*;<br />import java.util.*;<br />import java.lang.*;<br />import javax.servlet.*;<br />import javax.servlet.http.*;<br />import java.util.regex.*;<br /> public final class DataAggregator extends HttpServlet<br />{<br />      public void doGet(HttpServletRequest request, HttpServletResponse response)<br />            throws ServletException, IOException<br />      {<br />            PrintWriter out = response.getWriter();<br />            String searchTerm = request.getParameter("index");<br />             try<br />            {<br />                  // The application validates the user-supplied input<br />                  if (validateSearchTerm(searchTerm))<br />                  {<br />                        String retString;<br />                        retString = "The queried index \"";<br />                        retString += encodeHtml(searchTerm);<br />                        retString += "\" produced the following results:&lt;br&gt; ";<br />                        out.println(retString);<br />                        aggregateData(out, searchTerm);<br />                  }<br />                  else<br />                  {<br />                        // Add the appropriate logging and exception handling<br />                        // mechanisms. Consult the Exception Handling and<br />                        // Logging sections<br />                        out.println("We cannot handle your request at the moment."<br />                                 + " Please try again later.");<br />                  }<br />            }<br />             catch (Exception e)<br />            {<br />                   // Add the appropriate logging and exception handling<br />                   // mechanisms. Consult the Exception Handling and<br />                   // Logging sections<br />                   out.println("We cannot handle your request at the moment."<br />                           + " Please try again later.");<br />            }<br />             out.flush();<br />             out.close();<br />      }<br />       boolean validateSearchTerm(String input)<br />      {<br />            String goodPattern = "(\\w|\\d)+";<br />            int goodLength = 8;<br />             if (input == null)<br />            {<br />                  return false;<br />            }<br />             if(input.length() &gt; goodLength)<br />            {<br />                  return false;<br />            }<br />                        Pattern p = Pattern.compile(goodPattern);<br />            Matcher m = p.matcher(input);<br />                        if(!m.matches())<br />            {<br />                  return false;<br />            }<br />                        return true;<br />      }<br />       void aggregateData(PrintWriter out, String searchTerm)<br />      {<br />            double[] rData = common.queryDBForIndex(searchTerm);<br />             // The application fails to validate the returned<br />             // data from the database<br />             // Business logic that performs certain data analysis<br />      }<br />}</pre>
+  </blockquote>
+  <h1>Related Guideline</h1>
+  <ul>
+    <li>
+      <a href="71225A92-ECA2-481E-ADEE-EA9C222DEA43">Guideline: Validate Input from All Sources (Java Web Application)</a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

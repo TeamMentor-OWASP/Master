@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="-2017424498" Content_Hash="878683617">
   <Metadata>
     <Id>b0bbf434-dc63-49ac-a400-b6dc0c766316</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>Chosen Ciphertext Attack</Title>
     <Category>Cryptography</Category>
     <Phase>Any</Phase>
@@ -16,6 +16,65 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<br><br><h1>Applies To</h1><p>Applications that apply cryptographic protection mechanisms.</p><h1>Description</h1><p>In this attack the goal is to discover the key of a crypto system by controlling what ciphertext is decrypted. The attacker usually has access to a large number of encrypted messages and the equivalent of a tamperproof box that can do decryption. This type of attack is primarily applicable to asymmetric encryption algorithms but can also be applied to symmetric encryption algorithms as well. Another variant of this attack is the Adaptive chosen-ciphertext attack in which the attacker sends a number of ciphertexts to be decrypted then based on the plaintext that is returned the attacker chooses different ciphertext to be decrypted in the next round.</p><h1>Impact</h1><ul><li>Discovery of the private key used in the system.</li></ul><h1>Vulnerabilities</h1><ul><li>Allowing anonymous users to decrypt chosen ciphertext. </li><li>Using an encryption algorithm that does not protect against this type of attack.</li></ul><h1>Countermeasures</h1><ul><li>For RSA encryption use Optimal Asymmetric Encryption Padding. </li><li>Deny anonymous users the ability to decrypt arbitrary ciphertext.</li></ul><h1>Additional Resources</h1><ul><li>For more information on chosen ciphertext attacks, see: <a href="http://en.wikipedia.org/wiki/Chosen_ciphertext_attack">http://en.wikipedia.org/wiki/Chosen_ciphertext_attack</a></li></ul><h1>Related Items</h1><ul><li><a href="ruledisplay:DEBB5734-39D0-4922-BDEE-1E0547E22DAD">Attack: Chosen Plaintext Attack</a> </li><li><a href="ruledisplay:4572037A-2166-4AD1-8E73-D623E468A7B9">Attack: Information Disclosure Attack</a> </li><li><a href="ruledisplay:24D078E3-A02F-4EDF-A6EA-DA0E3E5FFE5E">Attack: Key Bruteforce Attack</a> </li><li><a href="ruledisplay:13EE90D9-B0F6-45D6-913A-BA8527525A04">Attack: Traffic Analysis Attack</a> </li><li><a href="ruledisplay:5C9F30DE-BD35-4544-87C4-1D2E56D603A0">Attack: Timing Analysis Attack</a> </li><li><a href="ruledisplay:A2E3F1BD-31BC-41BF-B147-C314A87C2172">Attack: Statistical Analysis Attack</a> </li><li><a href="ruledisplay:23F61C2C-53E5-4FCD-9AB4-4182DBC19D6D">Attack: Sniff Memory for Secrets Attack</a> </li><li><a href="ruledisplay:EA8E596E-3498-4DA4-A4C7-55AAAB28B807">Guideline: Encrypt Sensitive Data in the Database </a></li><li><a href="ruledisplay:235E588E-621B-4C5E-A50E-8EA447330AD0">Guideline: Use a Secure Key Storage Location </a></li><li><a href="ruledisplay:3DC61B01-7418-4CF8-A193-BF968471796A">Guideline: Store Passwords Securely </a></li><li><a href="ruledisplay:5E283FD0-1A55-4DC3-971D-BF7C3318E7CB">Guideline: Encrypt Communication Links </a></li></ul>]]></Data>
+    <Data><![CDATA[<br />
+  <br />
+  <h1>Applies To</h1>
+  <p>Applications that apply cryptographic protection mechanisms.</p>
+  <h1>Description</h1>
+  <p>In this attack the goal is to discover the key of a crypto system by controlling what ciphertext is decrypted. The attacker usually has access to a large number of encrypted messages and the equivalent of a tamperproof box that can do decryption. This type of attack is primarily applicable to asymmetric encryption algorithms but can also be applied to symmetric encryption algorithms as well. Another variant of this attack is the Adaptive chosen-ciphertext attack in which the attacker sends a number of ciphertexts to be decrypted then based on the plaintext that is returned the attacker chooses different ciphertext to be decrypted in the next round.</p>
+  <h1>Impact</h1>
+  <ul>
+    <li>Discovery of the private key used in the system.</li>
+  </ul>
+  <h1>Vulnerabilities</h1>
+  <ul>
+    <li>Allowing anonymous users to decrypt chosen ciphertext. </li>
+    <li>Using an encryption algorithm that does not protect against this type of attack.</li>
+  </ul>
+  <h1>Countermeasures</h1>
+  <ul>
+    <li>For RSA encryption use Optimal Asymmetric Encryption Padding. </li>
+    <li>Deny anonymous users the ability to decrypt arbitrary ciphertext.</li>
+  </ul>
+  <h1>Additional Resources</h1>
+  <ul>
+    <li>For more information on chosen ciphertext attacks, see: <a href="http://en.wikipedia.org/wiki/Chosen_ciphertext_attack">http://en.wikipedia.org/wiki/Chosen_ciphertext_attack</a></li>
+  </ul>
+  <h1>Related Items</h1>
+  <ul>
+    <li>
+      <a href="/article/bb645071-1c9b-48cc-9622-ac3285e2c6d5">Attack: Chosen Plaintext Attack</a>
+    </li>
+    <li>
+      <a href="4572037A-2166-4AD1-8E73-D623E468A7B9">Attack: Information Disclosure Attack</a>
+    </li>
+    <li>
+      <a href="24D078E3-A02F-4EDF-A6EA-DA0E3E5FFE5E">Attack: Key Bruteforce Attack</a>
+    </li>
+    <li>
+      <a href="13EE90D9-B0F6-45D6-913A-BA8527525A04">Attack: Traffic Analysis Attack</a>
+    </li>
+    <li>
+      <a href="5C9F30DE-BD35-4544-87C4-1D2E56D603A0">Attack: Timing Analysis Attack</a>
+    </li>
+    <li>
+      <a href="/article/aabf1365-8bcc-49bb-887b-272bf54520de">Attack: Statistical Analysis Attack</a>
+    </li>
+    <li>
+      <a href="/article/46936d40-83f3-420e-8422-a7bd78f4e418">Attack: Sniff Memory for Secrets Attack</a>
+    </li>
+    <li>
+      <a href="EA8E596E-3498-4DA4-A4C7-55AAAB28B807">Guideline: Encrypt Sensitive Data in the Database </a>
+    </li>
+    <li>
+      <a href="/article/f12d5701-d706-47af-8c14-eaeeb4fad8e3">Guideline: Use a Secure Key Storage Location </a>
+    </li>
+    <li>
+      <a href="/article/5785aae6-b3d7-47d7-ab4e-31be81f29caf">Guideline: Store Passwords Securely </a>
+    </li>
+    <li>
+      <a href="/article/65a24726-461b-452d-ac91-cfbfad841419">Guideline: Encrypt Communication Links </a>
+    </li>
+  </ul>]]></Data>
   </Content>
 </TeamMentor_Article>

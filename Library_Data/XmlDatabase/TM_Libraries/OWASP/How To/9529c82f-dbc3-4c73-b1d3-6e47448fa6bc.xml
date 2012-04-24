@@ -2,7 +2,7 @@
 <TeamMentor_Article Metadata_Hash="965848737" Content_Hash="-216335988">
   <Metadata>
     <Id>9529c82f-dbc3-4c73-b1d3-6e47448fa6bc</Id>
-    <Library_Id>00000000-0000-0000-0000-000000000000</Library_Id>
+    <Library_Id>4738d445-bc9b-456c-8b35-a35057596c16</Library_Id>
     <Title>How to Test for Cross-Site Scripting (XSS) Bugs</Title>
     <Category>Input and Data Validation</Category>
     <Phase>Implementation</Phase>
@@ -16,6 +16,297 @@
     <Status />
   </Metadata>
   <Content Sanitized="true" DataType="Html">
-    <Data><![CDATA[<br><br><h1>Applies to</h1><p>XSS bugs affect applications that manipulate HTML input and output.&nbsp; In particular web applications developed in ASP, ASP .NET, PHP, PERL, Java, and Visual Basic.</p><h1>Summary</h1><p>Cross site scripting (or XSS) is a well known HTML-related security vulnerability that commonly affects Internet clients through XSS vulnerable servers.&nbsp; A XSS bug in a web server allows an attacker to send malicious payload to a victim browser such as IE, Firefox, or Netscape through the vulnerable server.&nbsp; &nbsp;Payloads may also execute in other HTTP clients not necessarily focused at browsing the web as long as they render HTML and execute any execute scripts. </p><p>Below is a summary of steps needed for testing for XSS bugs</p><ul><li><strong>Step 1</strong>:&nbsp; Understand XSS attack scenarios</li><li><strong>Step 2</strong>:&nbsp; List high risk components<strong> </strong>and<strong> </strong>entry points</li><li><strong>Step 3</strong>:&nbsp; Start testing and exploring</li><li><strong>Step 4</strong>:&nbsp; Tune test case data</li></ul><p><strong>Step1:&nbsp; Understand XSS Attack Scenarios</strong></p><p>There are two types of XSS: reflective and persistent.&nbsp; A reflective XSS bug occurs when the web server takes input from a visitor and automatically sends him back the input without checking if the data inputted contains a script.&nbsp; Thus, the input data is <em>reflected</em> to the visitor and executes at the visitor's browser.&nbsp;</p><p>A persistent XSS bug is when a script embedded in malicious data is stored in a persistent store such as database, a file, or other storing mechanism.&nbsp; The malicious data containing a script <em>persists</em> in the server.&nbsp;&nbsp; If the server application takes this stored content and sends it to the client without validating its contents, the script will be executed in the browser.&nbsp;</p><p>It is important to understand both XSS attack scenarios to know what to look at when testing.</p><p><strong><em>Reflective XSS through web search form scenario</em></strong></p><p>A web site has a search page named search.php that contains the following form:</p><p><img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image001.png"></p><p>&lt;form&gt;</p><p>&lt;input name="searchInput" type="text" size="50"&gt;</p><p>&lt;input name="searchButton" type="button" size="20" value="search"&gt;</p><p>&lt;/form&gt;</p><p>&nbsp;It collects input using the searchInput variable and shows the results in the same page:</p><p>&nbsp;&lt;p&gt; Search results for &lt;?php echo $_GET['searchInput']?&gt; are:</p><p>&nbsp;The user can type test and will see:</p><p><img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image003.png"></p><p>An attacker can exploit the searchInput variable using the SCRIPT tag and type:</p><p><img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image005.png"></p><p>The server will send the user a page containing a SCRIPT tag and the user browser will execute its contents and display a message box with the word XSS.&nbsp; An attacker can send an email to a victim and tell her to click the following URL:</p><p>http://teammentorexample.com/search/search.php?searchInput=&lt;SCRIPT&gt;payload&lt;/SCRIPT&gt;</p><p>When following the link, the malicious payload executes in the victim browser's context and can be used for stealing session or cookie information.</p><p><strong><em>Persistent XSS through a SQL database server</em></strong></p><p>A web application creates a profile web page by querying a database table and getting profile information from it. The problem is that the database doesn't check for a possible script being stored in the database.&nbsp; To display the user's favorite quote it uses the following PHP code:</p><p>echo 'favorite quote:&nbsp; &lt;br&gt;';</p><p>$connection = odbc_connect("sqldb", "admin", "root");</p><p>$query = "SELECT quote FROM ProfileTable WHERE UserName = " . &nbsp;$_GET['user']"; </p><p>$result = odbc_exec($connection, $query);</p><p>odbc_fetch_row($result);</p><p>$quote = odbc_result($result, 1); </p><p>print($quote);</p><p>An attacker with a profile name of 'JohnB' connected to the database before and set this information in his profile as his favorite quote:</p><p>&lt;SCRIPT&gt;alert('XSS') &lt;/SCRIPT&gt;</p><p>Now, every time that anyone visits the their profile by following a link like this one will see the alert box:</p><p>&nbsp;http://teammentorexample.com/showProfile.php?user=JohnB</p><p>The attacker can modify the alert box with a more dangerous payload such as stealing session or cookie information.</p><p><strong>Step 2: List High Risk Components and Entry Points</strong></p><p><strong><em>Identify high risk components</em></strong></p><p>The next step in testing for XSS bugs is to do an extensive and careful revision of components that take input data from Internet clients and use send it back to the client.&nbsp; In case of large web services, documentation such as design or architectural, if available, become real handy at this point. &nbsp;&nbsp;Testers need to think about what components reflect data to a web client (for reflective XSS) and store data which is later send to a web client (for persistent XSS).&nbsp; Common components that do this include:&nbsp;</p><p>Search web pages</p><p>Profile-related web pages</p><p>Web forums</p><p>Blogs</p><p>RSS feeds</p><p>HTML-based help browsers for thick clients&nbsp;</p><p><strong><em>Look for code that writes HTML responses</em></strong></p><p>There are many different scripting functions that append HTML to the server response.&nbsp; Finding the server-side code that writes data out is the first step evaluating and finding potential XSS issues.&nbsp; Here are some examples of functions that do that:</p><p>Response.Write&nbsp;&nbsp;&nbsp; (ASP)</p><p>&lt;%= %&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (ASP)</p><p>echo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (PHP)</p><p>print&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (PHP)</p><p>Functions to write data to a response vary depending on the language and platform you're testing.&nbsp; Be certain that you understand all the relevant functions in the language you're using.</p><p><strong><em>Check for non-validated and unencoded data in responses</em></strong></p><p>Next, check what is being output by the mechanisms above.&nbsp; For example, an application might do this:</p><p>Response.Write(Request.QueryString(search))</p><p>To write the contents of the search value in the URL.&nbsp; If the variable is set to a script it will execute as soon as the client renders the page written.</p><p>The following PHP code doesn't look so harmful at first.&nbsp; </p><p>print($quote);</p><p>However, if the quote variable is a string that directly comes from a database like in the persistent scenario above then it suffers of XSS.</p><p>Look carefully at cases where the output data comes from a back-end though a database or a web method.&nbsp; It might be that a web method returns non-validated data:</p><p>Response.Write(ExternalApplication.GetRSSFeedMethod())</p><p>Even if the data written out by an application comes directly from the user and has not been specifically validated for format, if it is appropriately encoded, it can still be safe.&nbsp; That said, the encoding must take the form of a whitelist of known-safe characters (generally only the alphanumerics), not a blacklist as is commonly attempted.</p><p><strong><em>Match high risk components with entry points</em></strong></p><p>Non-validated data comes from all of the application's entry points, not just the web.&nbsp; Be certain to cover all the possible sources of malicious data which might get passed to a client.&nbsp; Common data sources include:</p><ul><li>Web forms</li><li>URL contents</li><li>Cookie contents</li><li>Flash parameters</li><li>SQL database query contents</li><li>Web service data</li><li>Graphical User Interface</li></ul><p>List the high risk variables in the application and their data sources to make sure that they are covered during review and testing&nbsp;&nbsp;</p><p><img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image007.png"></p><p><strong>Step 3:&nbsp; Start Test and Exploring&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong></p><p>During this step testing is focused at submitting basic XSS fuzz strings and observing how the application reacts, and then trying to display a simple alert box that proves the existence of an XSS bug.</p><p><strong><em>Start with a simple fuzz string</em></strong></p><p>Success in finding XSS bugs depends on whether the tester is able to store or reflect an HTML script in or through the server.&nbsp; In almost all cases scripts are included in between SCRIPT tags (other tags also worked as explained later).&nbsp; During this step, it is recommended to start exploring how the server application's high risk components react to tag related input.&nbsp; A good idea is to start testing a simple fuzz string like this one:</p><p>'&gt;;!--"&gt;&lt;XYZ&gt;&lt;=&amp;{()}</p><p>Then look for the string XYZ in server's response to see how the server processed the special script related characters.&nbsp; It might turn out that the server uses the string inside of a tag:</p><p>&lt;<strong>input</strong> type="text" name="keyword" id="keyword" maxlength="255" value=<a name="line163"></a>"'&gt;;!--"&gt;&lt;<strong>XYZ</strong>&gt;&lt;=&amp;{()}" style="height:10px; color:#000;" /&gt;</p><p>Continue by modifying the initial string to try displaying an alert.&nbsp; The double quotes of the original fuzz string closed the <em>value</em> property so whatever came before doesn't matter.&nbsp; Also, after the closing parenthesis next to the letter Z the string can be anything.&nbsp; Taking the string can be simplified to this:</p><p>"&gt;&lt;XYZ&gt;</p><p>The server might reply with:</p><p>&lt;<strong>input</strong> type="text" name="keyword" id="keyword" maxlength="255" value=<a name="line1631"></a>""&gt;&lt;<strong>XYZ</strong>&gt;" style="height:10px; color:#000;" /&gt;</p><p>To learn more,&nbsp;see the XSS Cheat Sheet at&nbsp;Ha.ckers.com (<a href="http://ha.ckers.org/xss.html">http://ha.ckers.org/xss.html</a>)</p><p><strong><em>Try to display an alert box</em></strong></p><p>The following goal is to execute a script and the easiest script to test is the one shown in the first scenario that displays an alert box.&nbsp; Note that now the tester knows that the malicious sting needs to start with the "&gt; character, due to where in the HTML document it will appear:</p><p>"&gt;&lt;script&gt;alert('Works')&lt;/script&gt;</p><p>If the server doesn't filter the SCRIPT tags then an alert box will appear.&nbsp; The code sent back to the tester will look like this.</p><p>&lt;<strong>input</strong> type="text" name="keyword" id="keyword" maxlength="255" value=<a name="line16311"></a>""&gt;<span style="text-decoration:underline">&lt;script&gt;alert('Works')&lt;/script&gt;</span>" style="height:10px; color:#000;" /&gt;</p><p><strong><em>Cover different tags</em></strong></p><p>Sometimes severs filter out the string &lt;script&gt; from their output.&nbsp; If the server doesn't allow script tags, try the img tag and put your code in the src property:</p><p>"&gt;&lt;img src="javascript:alert('Works');"&lt;/img&gt;</p><p>In fact, there are many other tags known to be dangerous in some cases, such as &lt;iframe&gt;, &lt;body&gt;, &lt;embed&gt;, &lt;meta&gt;, &lt;html&gt;, &lt;frame&gt;, &lt;frameset&gt;, &lt;input&gt;, &lt;layer&gt;, &lt;object&gt;, and &lt;style&gt;. </p><p>A good choice is to try the following that doesn't require script tags or the JavaScript command:</p><p>"&gt;&lt;body onload=alert('Works')&gt;</p><p><strong>Step 4:&nbsp; Tune Test Case Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong></p><p>During this step testing is focused at covering all entry points and tuning test case data based on the format of the specific entry point.&nbsp;&nbsp; </p><p><strong><em>Consider string format and encoding according to entry point</em></strong></p><p>The example in step 3 doesn't specify how the fuzz string was passed to the application (it can be assumed that it was through a web form for these purposes). &nbsp;During this step, testers need to go through their list of components and entry points and modify test case data according to the entry point.&nbsp; Make sure that all entry points are covered.</p><p><strong><em>Web Forms</em></strong></p><p>Web forms are the easiest to test since they commonly allow only ASCII strings.&nbsp; To test through this entry point, just go through the high risk component list looking for ones that have web forms.&nbsp; Then use a web browser to submit test strings to the components via the forms, and possibly an attack proxy like Burp Suite to circumvent any client-side JavaScript used for data validation.</p><p><strong><em>URL Contents</em></strong></p><p>A web application is vulnerable to XSS through the value passed in the password variable:&nbsp;</p><p>http://www.xvulnerablesite.com/login.asp?username=[value]&amp;password=[value]</p><p>If testers want to test the following string in the password value:&nbsp;</p><p>&lt;script&gt;alert('Works')&lt;/script&gt;</p><p>They will need to modify the above URL in this way:</p><p>http://www.xvulnerablesite.com/login.asp?username=any&amp;password=&lt;script&gt;alert('Works')&lt;/script&gt;</p><p>When executing test cases through the URL it is important to try different encodings of the test string.&nbsp;&nbsp; For instance, one can execute the first attack string below and it causes no effect.&nbsp; Then execute the second one and the alert box works.&nbsp; In this case the web application didn't allow the symbol characters (except the round brackets) in ASCII but did in their hexadecimal encodings:&nbsp;</p><p>&lt;img src="javascript:alert('Works');"&gt;</p><p>&nbsp;http://www.xvulnerablesite.com/login.asp?username=any&amp;password=&lt;img%20src%3d%22javascript:alert(%27Works%27)%22&gt;</p><p>When testing through the URL and sometimes in other places, it is necessary to investigate what type of encodings the server is using and modify test cases according to them.</p><p><strong><em>Cookie contents</em></strong></p><p>Sometimes the application blindly displays the contents of a cookie in the web browser such as showed in the following PHP code:</p><p>&lt;?php&nbsp; echo $_COOKIE["testcookie"]; ?&gt;</p><p>To test the risky component through this entry point we have to modify the cookie file in disk and try to inject a simple script:</p><p><img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image009.png"></p><p>Then restart the browser and navigate to the page containing the PHP code to see if an alert box appears.&nbsp; Alternately, an attack proxy can be used to perform this modification on the fly, which is especially helpful in the case of complicated applications.</p><p><strong><em>Flash Parameters</em></strong></p><p>Since Flash parameters are frequently passed in the URL, testing Flash parameters is similar to testing URL contents.&nbsp; Here, it is necessary to go through each parameter in the URL and see how the application reacts.&nbsp; Flash also frequently receives parameters using <strong>FlashVars</strong>.&nbsp; Consider the following code to load a Flash movie:</p><p>&nbsp;&lt;object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"</p><p>&nbsp;codebase=""http://macromedia.com/cabs/swflash.cab#version=6,0,0,0""</p><p>&nbsp;width="250" height="250" id="flaMovie1" align="center"&gt;</p><p>&nbsp;&lt;param name=movie value="flaMovie1.swf"&gt;</p><p>&nbsp;&lt;param name=<strong>FlashVars</strong> value=<strong>"inputURL=usersinput"</strong>&gt; </p><p>&nbsp;&lt;param name=quality value=high&gt; </p><p>&nbsp;&lt;param name=bgcolor value=#ffffff&gt; </p><p>&nbsp;&lt;embed src="flaMovie1.swf" <strong>FlashVars</strong>=<strong>"inputURL=usersinput"</strong> </p><p>&nbsp; quality="high" bgcolor="#ffffff" width="250" height="250" </p><p>&nbsp; name="flaMovie1" align type="application/x-shockwave-flash" </p><p>&nbsp; pluginspage="http://www.macromedia.com/go/getflashplayer"&gt;</p><p>&lt;/object&gt;</p><p>&nbsp;During this step, testers will need to change the entry parameters to Flash like this:</p><p>&nbsp;&lt;object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"</p><p>&nbsp;codebase=""http://macromedia.com/cabs/swflash.cab#version=6,0,0,0""</p><p>&nbsp;width="250" height="250" id="flaMovie1" align="CENTER"&gt;</p><p>&nbsp;&lt;param name=movie value="flaMovie1.swf"&gt;</p><p>&nbsp;&lt;param name=<strong>FlashVars</strong> value=<strong>"inputURL=%3cscript%3ealart%28%b4XSS%b4%29%3c%2fscript%3e"</strong>&gt; </p><p>&nbsp;&lt;param name=quality value=high&gt; </p><p>&nbsp;&lt;para name=bgcolor value=#ffffff&gt; </p><p>&nbsp;&lt;embed src="flaMovie1.swf" <strong>FlashVars</strong>=<strong>"inputURL=%3CSCRIPT%3Ealert%28%B4XSS%B4%29%3C%2FSCRIPT%3E"</strong> </p><p>&nbsp; quality="high" bgcolor="#ffffff" width="250" height="250" </p><p>&nbsp; name="flaMovie1" align type="application/x-shockwave-flash" </p><p>&nbsp; pluginspage="http://www.macromedia.com/go/getflashplayer"&gt;</p><p>&lt;/object&gt;</p><p><strong><em>Graphical User Interface</em></strong></p><p>Testing through the UI is similar to web form testing in that the tester enters test values&nbsp; directly to the screen.&nbsp; In the case of GUI testing the application used is not a web browser but any other application that interacts with high risk components, renders HTML,&nbsp; and that allows user input or otherwise receives untrusted data.<strong></strong></p><p><strong><em>Look for additional entry points</em></strong></p><p>Each application has its own set of entry points.&nbsp; This article lists the common ones for XSS attacks.&nbsp; Nonetheless, testers must explore their application for additional ways of passing data that might make it into a XSS vulnerability.&nbsp; It is recommended to use system monitoring tools such as the ones from www.sysinternals.com and dedicated attack tools such as Burp proxy that lets you intercept and add match-and-replace rules to change the contents of HTTP packets.</p><p><strong><em>Keep tuning test cases </em></strong></p><p>Sometimes the initial test string can land in a part of the source code where XSS is possible without using a script tag.&nbsp; The tester may be able to pad it a little or maybe just write the JavaScript command.&nbsp; Always check if the initial input lands inside or within an actual command or parameter.</p><p>Tags have different ways of modifying them for script injection.&nbsp; To learn more about testing web applications for Cross-Site Scripting Vulnerabilities, see <a href="http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx">http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx</a>&nbsp;and&nbsp; <a href="http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors">http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors</a>.</p><p><strong><em>Consider the case of persistent XSS</em></strong></p><p>Sometimes the tester won't see the results of test cases right away.&nbsp; An XSS bug might exist that takes malicious input and only sends it back if the attacker does something else like visiting another page, for instance.&nbsp; Such is often the case with a persistent XSS attack.</p><p>Consider the following case.&nbsp; An application asks for a user's password hint.&nbsp; When the server prompts the user for the hint, the attacker types one of the XSS test strings described before.&nbsp; Then submits the registration but the server doesn't show the alert box.&nbsp; Then the attacker has the victim browse the site's password page and ask for the hint.&nbsp; When the site displays the hint the alert box appears.&nbsp; </p><p>While testing persistent XSS, testers must think of all the places where the input might end up and check all of them.&nbsp; They should talk to developers and use specifications to check all data stores where a persistent XSS bug can manifest.</p><p><strong><em>Automating test cases</em></strong></p><p>One can automate XSS testing by setting up a server that collects any successful XSS attacks.&nbsp; For instance, can create an ASP page that has the following code, and name the page results.asp</p><p>&lt;%<br>&nbsp;&nbsp; set fso = Server.CreateObject("Scripting.FileSystemObject")<br>&nbsp;&nbsp; set fw = fso.CreateTextFile("c:\inetpub\wwwroot\results.txt",True)<br>&nbsp;&nbsp; fw.WriteLine("test case:")<br>&nbsp;&nbsp; fw.WriteLine(Request.QueryString("testcase"))&nbsp;&nbsp; <br>&nbsp;&nbsp; fw.Close <br>%&gt;</p><p>&nbsp;Then generate test cases by modifying or creating new HTTP requests to the target server.&nbsp; Instead of displaying alert the script invokes results.asp passing its corresponding test case number (using the src property of HTML tags).&nbsp; For example the tester wants to cover XSS through the img tag in the password field of the login page.&nbsp; He labels this test case number 17.&nbsp; Then passes the following string using automation:</p><p>http://www.xvulnerablesite.com/login.asp?username=any&amp;password=&lt;img src="http://xyoursite.com/results.asp?testcase=17"&gt;</p><p>&nbsp;If this test case fails then the value 17 appears in the results.txt file and the tester knows that a XSS bug was found and what caused it.&nbsp; Testers can code hundreds of test cases like this and a test generator like an HTTP client to guide the automation.&nbsp;</p><p>In addition, look at the different fuzzers available for free at <a href="http://en.wikipedia.org/wiki/Fuzz_testing">http://en.wikipedia.org/wiki/Fuzz_testing</a>.&nbsp; Many of these have the capability of executing XSS test cases and help in uncovering vulnerabilities.</p><h1>Conclusions</h1><p>Testing for XSS bugs is not complicated but you need to be thorough.&nbsp; It is important that you go through all the places where your web server renders HTML output.&nbsp; There are many strings to try, many tags to look at, different methods to feed the test data, and even room for automation.&nbsp; However, the most important thing to keep in mind is to follow your test data.&nbsp; Don't just look for the alert box, but look at the code that comes back to you.&nbsp; Successful XSS testing is all about knowing how to tune you test case data.</p><h1>Additional Resources&nbsp;</h1><ul><li>XSS (Cross Site Scripting) Cheat Sheet.&nbsp; Ha.ckers.com (<a href="http://ha.ckers.org/xss.html">http://ha.ckers.org/xss.html</a>)</li><li>Testing Your Web Applications for Cross-Site Scripting Vulnerabilities, Chris Weber. <a href="http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx">http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx</a>&nbsp;</li><li>OWASP Testing Guide Appendix C: Fuzz Vectors. <a href="http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors">http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors</a></li><li>&nbsp;Fuzz Testing.&nbsp; Wikipedia. <a href="http://en.wikipedia.org/wiki/Fuzz_testing">http://en.wikipedia.org/wiki/Fuzz_testing</a>&nbsp;</li></ul><h1>Related Items</h1><div><ul><li><div>&nbsp;<a href="ruledisplay:BC10DCE2-CA48-44BF-8BF6-FEFBE8DCCB7E">Attack: Cross Site Scripting Attack</a></div></li></ul></div>]]></Data>
+    <Data><![CDATA[<br />
+  <br />
+  <h1>Applies to</h1>
+  <p>XSS bugs affect applications that manipulate HTML input and output.&amp;nbsp; In particular web applications developed in ASP, ASP .NET, PHP, PERL, Java, and Visual Basic.</p>
+  <h1>Summary</h1>
+  <p>Cross site scripting (or XSS) is a well known HTML-related security vulnerability that commonly affects Internet clients through XSS vulnerable servers.&amp;nbsp; A XSS bug in a web server allows an attacker to send malicious payload to a victim browser such as IE, Firefox, or Netscape through the vulnerable server.&amp;nbsp; &amp;nbsp;Payloads may also execute in other HTTP clients not necessarily focused at browsing the web as long as they render HTML and execute any execute scripts. </p>
+  <p>Below is a summary of steps needed for testing for XSS bugs</p>
+  <ul>
+    <li>
+      <strong>Step 1</strong>:&amp;nbsp; Understand XSS attack scenarios</li>
+    <li>
+      <strong>Step 2</strong>:&amp;nbsp; List high risk components<strong></strong>and<strong></strong>entry points</li>
+    <li>
+      <strong>Step 3</strong>:&amp;nbsp; Start testing and exploring</li>
+    <li>
+      <strong>Step 4</strong>:&amp;nbsp; Tune test case data</li>
+  </ul>
+  <p>
+    <strong>Step1:&amp;nbsp; Understand XSS Attack Scenarios</strong>
+  </p>
+  <p>There are two types of XSS: reflective and persistent.&amp;nbsp; A reflective XSS bug occurs when the web server takes input from a visitor and automatically sends him back the input without checking if the data inputted contains a script.&amp;nbsp; Thus, the input data is <em>reflected</em> to the visitor and executes at the visitor's browser.&amp;nbsp;</p>
+  <p>A persistent XSS bug is when a script embedded in malicious data is stored in a persistent store such as database, a file, or other storing mechanism.&amp;nbsp; The malicious data containing a script <em>persists</em> in the server.&amp;nbsp;&amp;nbsp; If the server application takes this stored content and sends it to the client without validating its contents, the script will be executed in the browser.&amp;nbsp;</p>
+  <p>It is important to understand both XSS attack scenarios to know what to look at when testing.</p>
+  <p>
+    <strong>
+      <em>Reflective XSS through web search form scenario</em>
+    </strong>
+  </p>
+  <p>A web site has a search page named search.php that contains the following form:</p>
+  <p>
+    <img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image001.png" />
+  </p>
+  <p>&lt;form&gt;</p>
+  <p>&lt;input name="searchInput" type="text" size="50"&gt;</p>
+  <p>&lt;input name="searchButton" type="button" size="20" value="search"&gt;</p>
+  <p>&lt;/form&gt;</p>
+  <p>&amp;nbsp;It collects input using the searchInput variable and shows the results in the same page:</p>
+  <p>&amp;nbsp;&lt;p&gt; Search results for &lt;?php echo $_GET['searchInput']?&gt; are:</p>
+  <p>&amp;nbsp;The user can type test and will see:</p>
+  <p>
+    <img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image003.png" />
+  </p>
+  <p>An attacker can exploit the searchInput variable using the SCRIPT tag and type:</p>
+  <p>
+    <img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image005.png" />
+  </p>
+  <p>The server will send the user a page containing a SCRIPT tag and the user browser will execute its contents and display a message box with the word XSS.&amp;nbsp; An attacker can send an email to a victim and tell her to click the following URL:</p>
+  <p>http://teammentorexample.com/search/search.php?searchInput=&lt;SCRIPT&gt;payload&lt;/SCRIPT&gt;</p>
+  <p>When following the link, the malicious payload executes in the victim browser's context and can be used for stealing session or cookie information.</p>
+  <p>
+    <strong>
+      <em>Persistent XSS through a SQL database server</em>
+    </strong>
+  </p>
+  <p>A web application creates a profile web page by querying a database table and getting profile information from it. The problem is that the database doesn't check for a possible script being stored in the database.&amp;nbsp; To display the user's favorite quote it uses the following PHP code:</p>
+  <p>echo 'favorite quote:&amp;nbsp; &lt;br&gt;';</p>
+  <p>$connection = odbc_connect("sqldb", "admin", "root");</p>
+  <p>$query = "SELECT quote FROM ProfileTable WHERE UserName = " . &amp;nbsp;$_GET['user']"; </p>
+  <p>$result = odbc_exec($connection, $query);</p>
+  <p>odbc_fetch_row($result);</p>
+  <p>$quote = odbc_result($result, 1); </p>
+  <p>print($quote);</p>
+  <p>An attacker with a profile name of 'JohnB' connected to the database before and set this information in his profile as his favorite quote:</p>
+  <p>&lt;SCRIPT&gt;alert('XSS') &lt;/SCRIPT&gt;</p>
+  <p>Now, every time that anyone visits the their profile by following a link like this one will see the alert box:</p>
+  <p>&amp;nbsp;http://teammentorexample.com/showProfile.php?user=JohnB</p>
+  <p>The attacker can modify the alert box with a more dangerous payload such as stealing session or cookie information.</p>
+  <p>
+    <strong>Step 2: List High Risk Components and Entry Points</strong>
+  </p>
+  <p>
+    <strong>
+      <em>Identify high risk components</em>
+    </strong>
+  </p>
+  <p>The next step in testing for XSS bugs is to do an extensive and careful revision of components that take input data from Internet clients and use send it back to the client.&amp;nbsp; In case of large web services, documentation such as design or architectural, if available, become real handy at this point. &amp;nbsp;&amp;nbsp;Testers need to think about what components reflect data to a web client (for reflective XSS) and store data which is later send to a web client (for persistent XSS).&amp;nbsp; Common components that do this include:&amp;nbsp;</p>
+  <p>Search web pages</p>
+  <p>Profile-related web pages</p>
+  <p>Web forums</p>
+  <p>Blogs</p>
+  <p>RSS feeds</p>
+  <p>HTML-based help browsers for thick clients&amp;nbsp;</p>
+  <p>
+    <strong>
+      <em>Look for code that writes HTML responses</em>
+    </strong>
+  </p>
+  <p>There are many different scripting functions that append HTML to the server response.&amp;nbsp; Finding the server-side code that writes data out is the first step evaluating and finding potential XSS issues.&amp;nbsp; Here are some examples of functions that do that:</p>
+  <p>Response.Write&amp;nbsp;&amp;nbsp;&amp;nbsp; (ASP)</p>
+  <p>&lt;%= %&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; (ASP)</p>
+  <p>echo&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; (PHP)</p>
+  <p>print&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; (PHP)</p>
+  <p>Functions to write data to a response vary depending on the language and platform you're testing.&amp;nbsp; Be certain that you understand all the relevant functions in the language you're using.</p>
+  <p>
+    <strong>
+      <em>Check for non-validated and unencoded data in responses</em>
+    </strong>
+  </p>
+  <p>Next, check what is being output by the mechanisms above.&amp;nbsp; For example, an application might do this:</p>
+  <p>Response.Write(Request.QueryString(search))</p>
+  <p>To write the contents of the search value in the URL.&amp;nbsp; If the variable is set to a script it will execute as soon as the client renders the page written.</p>
+  <p>The following PHP code doesn't look so harmful at first.&amp;nbsp; </p>
+  <p>print($quote);</p>
+  <p>However, if the quote variable is a string that directly comes from a database like in the persistent scenario above then it suffers of XSS.</p>
+  <p>Look carefully at cases where the output data comes from a back-end though a database or a web method.&amp;nbsp; It might be that a web method returns non-validated data:</p>
+  <p>Response.Write(ExternalApplication.GetRSSFeedMethod())</p>
+  <p>Even if the data written out by an application comes directly from the user and has not been specifically validated for format, if it is appropriately encoded, it can still be safe.&amp;nbsp; That said, the encoding must take the form of a whitelist of known-safe characters (generally only the alphanumerics), not a blacklist as is commonly attempted.</p>
+  <p>
+    <strong>
+      <em>Match high risk components with entry points</em>
+    </strong>
+  </p>
+  <p>Non-validated data comes from all of the application's entry points, not just the web.&amp;nbsp; Be certain to cover all the possible sources of malicious data which might get passed to a client.&amp;nbsp; Common data sources include:</p>
+  <ul>
+    <li>Web forms</li>
+    <li>URL contents</li>
+    <li>Cookie contents</li>
+    <li>Flash parameters</li>
+    <li>SQL database query contents</li>
+    <li>Web service data</li>
+    <li>Graphical User Interface</li>
+  </ul>
+  <p>List the high risk variables in the application and their data sources to make sure that they are covered during review and testing&amp;nbsp;&amp;nbsp;</p>
+  <p>
+    <img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image007.png" />
+  </p>
+  <p>
+    <strong>Step 3:&amp;nbsp; Start Test and Exploring&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; </strong>
+  </p>
+  <p>During this step testing is focused at submitting basic XSS fuzz strings and observing how the application reacts, and then trying to display a simple alert box that proves the existence of an XSS bug.</p>
+  <p>
+    <strong>
+      <em>Start with a simple fuzz string</em>
+    </strong>
+  </p>
+  <p>Success in finding XSS bugs depends on whether the tester is able to store or reflect an HTML script in or through the server.&amp;nbsp; In almost all cases scripts are included in between SCRIPT tags (other tags also worked as explained later).&amp;nbsp; During this step, it is recommended to start exploring how the server application's high risk components react to tag related input.&amp;nbsp; A good idea is to start testing a simple fuzz string like this one:</p>
+  <p>'&gt;;!--"&gt;&lt;XYZ&gt;&lt;=&amp;{()}</p>
+  <p>Then look for the string XYZ in server's response to see how the server processed the special script related characters.&amp;nbsp; It might turn out that the server uses the string inside of a tag:</p>
+  <p>&lt;<strong>input</strong> type="text" name="keyword" id="keyword" maxlength="255" value=<a name="line163"></a>"'&gt;;!--"&gt;&lt;<strong>XYZ</strong>&gt;&lt;=&amp;{()}" style="height:10px; color:#000;" /&gt;</p>
+  <p>Continue by modifying the initial string to try displaying an alert.&amp;nbsp; The double quotes of the original fuzz string closed the <em>value</em> property so whatever came before doesn't matter.&amp;nbsp; Also, after the closing parenthesis next to the letter Z the string can be anything.&amp;nbsp; Taking the string can be simplified to this:</p>
+  <p>"&gt;&lt;XYZ&gt;</p>
+  <p>The server might reply with:</p>
+  <p>&lt;<strong>input</strong> type="text" name="keyword" id="keyword" maxlength="255" value=<a name="line1631"></a>""&gt;&lt;<strong>XYZ</strong>&gt;" style="height:10px; color:#000;" /&gt;</p>
+  <p>To learn more,&amp;nbsp;see the XSS Cheat Sheet at&amp;nbsp;Ha.ckers.com (<a href="http://ha.ckers.org/xss.html">http://ha.ckers.org/xss.html</a>)</p>
+  <p>
+    <strong>
+      <em>Try to display an alert box</em>
+    </strong>
+  </p>
+  <p>The following goal is to execute a script and the easiest script to test is the one shown in the first scenario that displays an alert box.&amp;nbsp; Note that now the tester knows that the malicious sting needs to start with the "&gt; character, due to where in the HTML document it will appear:</p>
+  <p>"&gt;&lt;script&gt;alert('Works')&lt;/script&gt;</p>
+  <p>If the server doesn't filter the SCRIPT tags then an alert box will appear.&amp;nbsp; The code sent back to the tester will look like this.</p>
+  <p>&lt;<strong>input</strong> type="text" name="keyword" id="keyword" maxlength="255" value=<a name="line16311"></a>""&gt;<span style="text-decoration:underline">&lt;script&gt;alert('Works')&lt;/script&gt;</span>" style="height:10px; color:#000;" /&gt;</p>
+  <p>
+    <strong>
+      <em>Cover different tags</em>
+    </strong>
+  </p>
+  <p>Sometimes severs filter out the string &lt;script&gt; from their output.&amp;nbsp; If the server doesn't allow script tags, try the img tag and put your code in the src property:</p>
+  <p>"&gt;&lt;img src="javascript:alert('Works');"&lt;/img&gt;</p>
+  <p>In fact, there are many other tags known to be dangerous in some cases, such as &lt;iframe&gt;, &lt;body&gt;, &lt;embed&gt;, &lt;meta&gt;, &lt;html&gt;, &lt;frame&gt;, &lt;frameset&gt;, &lt;input&gt;, &lt;layer&gt;, &lt;object&gt;, and &lt;style&gt;. </p>
+  <p>A good choice is to try the following that doesn't require script tags or the JavaScript command:</p>
+  <p>"&gt;&lt;body onload=alert('Works')&gt;</p>
+  <p>
+    <strong>Step 4:&amp;nbsp; Tune Test Case Data&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; </strong>
+  </p>
+  <p>During this step testing is focused at covering all entry points and tuning test case data based on the format of the specific entry point.&amp;nbsp;&amp;nbsp; </p>
+  <p>
+    <strong>
+      <em>Consider string format and encoding according to entry point</em>
+    </strong>
+  </p>
+  <p>The example in step 3 doesn't specify how the fuzz string was passed to the application (it can be assumed that it was through a web form for these purposes). &amp;nbsp;During this step, testers need to go through their list of components and entry points and modify test case data according to the entry point.&amp;nbsp; Make sure that all entry points are covered.</p>
+  <p>
+    <strong>
+      <em>Web Forms</em>
+    </strong>
+  </p>
+  <p>Web forms are the easiest to test since they commonly allow only ASCII strings.&amp;nbsp; To test through this entry point, just go through the high risk component list looking for ones that have web forms.&amp;nbsp; Then use a web browser to submit test strings to the components via the forms, and possibly an attack proxy like Burp Suite to circumvent any client-side JavaScript used for data validation.</p>
+  <p>
+    <strong>
+      <em>URL Contents</em>
+    </strong>
+  </p>
+  <p>A web application is vulnerable to XSS through the value passed in the password variable:&amp;nbsp;</p>
+  <p>http://www.xvulnerablesite.com/login.asp?username=[value]&amp;password=[value]</p>
+  <p>If testers want to test the following string in the password value:&amp;nbsp;</p>
+  <p>&lt;script&gt;alert('Works')&lt;/script&gt;</p>
+  <p>They will need to modify the above URL in this way:</p>
+  <p>http://www.xvulnerablesite.com/login.asp?username=any&amp;password=&lt;script&gt;alert('Works')&lt;/script&gt;</p>
+  <p>When executing test cases through the URL it is important to try different encodings of the test string.&amp;nbsp;&amp;nbsp; For instance, one can execute the first attack string below and it causes no effect.&amp;nbsp; Then execute the second one and the alert box works.&amp;nbsp; In this case the web application didn't allow the symbol characters (except the round brackets) in ASCII but did in their hexadecimal encodings:&amp;nbsp;</p>
+  <p>&lt;img src="javascript:alert('Works');"&gt;</p>
+  <p>&amp;nbsp;http://www.xvulnerablesite.com/login.asp?username=any&amp;password=&lt;img%20src%3d%22javascript:alert(%27Works%27)%22&gt;</p>
+  <p>When testing through the URL and sometimes in other places, it is necessary to investigate what type of encodings the server is using and modify test cases according to them.</p>
+  <p>
+    <strong>
+      <em>Cookie contents</em>
+    </strong>
+  </p>
+  <p>Sometimes the application blindly displays the contents of a cookie in the web browser such as showed in the following PHP code:</p>
+  <p>&lt;?php&amp;nbsp; echo $_COOKIE["testcookie"]; ?&gt;</p>
+  <p>To test the risky component through this entry point we have to modify the cookie file in disk and try to inject a simple script:</p>
+  <p>
+    <img src="../../../LibrariesImages/72525c65-a233-49df-8821-a45107b7e327/clip_image009.png" />
+  </p>
+  <p>Then restart the browser and navigate to the page containing the PHP code to see if an alert box appears.&amp;nbsp; Alternately, an attack proxy can be used to perform this modification on the fly, which is especially helpful in the case of complicated applications.</p>
+  <p>
+    <strong>
+      <em>Flash Parameters</em>
+    </strong>
+  </p>
+  <p>Since Flash parameters are frequently passed in the URL, testing Flash parameters is similar to testing URL contents.&amp;nbsp; Here, it is necessary to go through each parameter in the URL and see how the application reacts.&amp;nbsp; Flash also frequently receives parameters using <strong>FlashVars</strong>.&amp;nbsp; Consider the following code to load a Flash movie:</p>
+  <p>&amp;nbsp;&lt;object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"</p>
+  <p>&amp;nbsp;codebase=""http://macromedia.com/cabs/swflash.cab#version=6,0,0,0""</p>
+  <p>&amp;nbsp;width="250" height="250" id="flaMovie1" align="center"&gt;</p>
+  <p>&amp;nbsp;&lt;param name=movie value="flaMovie1.swf"&gt;</p>
+  <p>&amp;nbsp;&lt;param name=<strong>FlashVars</strong> value=<strong>"inputURL=usersinput"</strong>&gt; </p>
+  <p>&amp;nbsp;&lt;param name=quality value=high&gt; </p>
+  <p>&amp;nbsp;&lt;param name=bgcolor value=#ffffff&gt; </p>
+  <p>&amp;nbsp;&lt;embed src="flaMovie1.swf" <strong>FlashVars</strong>=<strong>"inputURL=usersinput"</strong></p>
+  <p>&amp;nbsp; quality="high" bgcolor="#ffffff" width="250" height="250" </p>
+  <p>&amp;nbsp; name="flaMovie1" align type="application/x-shockwave-flash" </p>
+  <p>&amp;nbsp; pluginspage="http://www.macromedia.com/go/getflashplayer"&gt;</p>
+  <p>&lt;/object&gt;</p>
+  <p>&amp;nbsp;During this step, testers will need to change the entry parameters to Flash like this:</p>
+  <p>&amp;nbsp;&lt;object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"</p>
+  <p>&amp;nbsp;codebase=""http://macromedia.com/cabs/swflash.cab#version=6,0,0,0""</p>
+  <p>&amp;nbsp;width="250" height="250" id="flaMovie1" align="CENTER"&gt;</p>
+  <p>&amp;nbsp;&lt;param name=movie value="flaMovie1.swf"&gt;</p>
+  <p>&amp;nbsp;&lt;param name=<strong>FlashVars</strong> value=<strong>"inputURL=%3cscript%3ealart%28%b4XSS%b4%29%3c%2fscript%3e"</strong>&gt; </p>
+  <p>&amp;nbsp;&lt;param name=quality value=high&gt; </p>
+  <p>&amp;nbsp;&lt;para name=bgcolor value=#ffffff&gt; </p>
+  <p>&amp;nbsp;&lt;embed src="flaMovie1.swf" <strong>FlashVars</strong>=<strong>"inputURL=%3CSCRIPT%3Ealert%28%B4XSS%B4%29%3C%2FSCRIPT%3E"</strong></p>
+  <p>&amp;nbsp; quality="high" bgcolor="#ffffff" width="250" height="250" </p>
+  <p>&amp;nbsp; name="flaMovie1" align type="application/x-shockwave-flash" </p>
+  <p>&amp;nbsp; pluginspage="http://www.macromedia.com/go/getflashplayer"&gt;</p>
+  <p>&lt;/object&gt;</p>
+  <p>
+    <strong>
+      <em>Graphical User Interface</em>
+    </strong>
+  </p>
+  <p>Testing through the UI is similar to web form testing in that the tester enters test values&amp;nbsp; directly to the screen.&amp;nbsp; In the case of GUI testing the application used is not a web browser but any other application that interacts with high risk components, renders HTML,&amp;nbsp; and that allows user input or otherwise receives untrusted data.<strong></strong></p>
+  <p>
+    <strong>
+      <em>Look for additional entry points</em>
+    </strong>
+  </p>
+  <p>Each application has its own set of entry points.&amp;nbsp; This article lists the common ones for XSS attacks.&amp;nbsp; Nonetheless, testers must explore their application for additional ways of passing data that might make it into a XSS vulnerability.&amp;nbsp; It is recommended to use system monitoring tools such as the ones from www.sysinternals.com and dedicated attack tools such as Burp proxy that lets you intercept and add match-and-replace rules to change the contents of HTTP packets.</p>
+  <p>
+    <strong>
+      <em>Keep tuning test cases </em>
+    </strong>
+  </p>
+  <p>Sometimes the initial test string can land in a part of the source code where XSS is possible without using a script tag.&amp;nbsp; The tester may be able to pad it a little or maybe just write the JavaScript command.&amp;nbsp; Always check if the initial input lands inside or within an actual command or parameter.</p>
+  <p>Tags have different ways of modifying them for script injection.&amp;nbsp; To learn more about testing web applications for Cross-Site Scripting Vulnerabilities, see <a href="http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx">http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx</a>&amp;nbsp;and&amp;nbsp; <a href="http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors">http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors</a>.</p>
+  <p>
+    <strong>
+      <em>Consider the case of persistent XSS</em>
+    </strong>
+  </p>
+  <p>Sometimes the tester won't see the results of test cases right away.&amp;nbsp; An XSS bug might exist that takes malicious input and only sends it back if the attacker does something else like visiting another page, for instance.&amp;nbsp; Such is often the case with a persistent XSS attack.</p>
+  <p>Consider the following case.&amp;nbsp; An application asks for a user's password hint.&amp;nbsp; When the server prompts the user for the hint, the attacker types one of the XSS test strings described before.&amp;nbsp; Then submits the registration but the server doesn't show the alert box.&amp;nbsp; Then the attacker has the victim browse the site's password page and ask for the hint.&amp;nbsp; When the site displays the hint the alert box appears.&amp;nbsp; </p>
+  <p>While testing persistent XSS, testers must think of all the places where the input might end up and check all of them.&amp;nbsp; They should talk to developers and use specifications to check all data stores where a persistent XSS bug can manifest.</p>
+  <p>
+    <strong>
+      <em>Automating test cases</em>
+    </strong>
+  </p>
+  <p>One can automate XSS testing by setting up a server that collects any successful XSS attacks.&amp;nbsp; For instance, can create an ASP page that has the following code, and name the page results.asp</p>
+  <p>&lt;%<br />&amp;nbsp;&amp;nbsp; set fso = Server.CreateObject("Scripting.FileSystemObject")<br />&amp;nbsp;&amp;nbsp; set fw = fso.CreateTextFile("c:\inetpub\wwwroot\results.txt",True)<br />&amp;nbsp;&amp;nbsp; fw.WriteLine("test case:")<br />&amp;nbsp;&amp;nbsp; fw.WriteLine(Request.QueryString("testcase"))&amp;nbsp;&amp;nbsp; <br />&amp;nbsp;&amp;nbsp; fw.Close <br />%&gt;</p>
+  <p>&amp;nbsp;Then generate test cases by modifying or creating new HTTP requests to the target server.&amp;nbsp; Instead of displaying alert the script invokes results.asp passing its corresponding test case number (using the src property of HTML tags).&amp;nbsp; For example the tester wants to cover XSS through the img tag in the password field of the login page.&amp;nbsp; He labels this test case number 17.&amp;nbsp; Then passes the following string using automation:</p>
+  <p>http://www.xvulnerablesite.com/login.asp?username=any&amp;password=&lt;img src="http://xyoursite.com/results.asp?testcase=17"&gt;</p>
+  <p>&amp;nbsp;If this test case fails then the value 17 appears in the results.txt file and the tester knows that a XSS bug was found and what caused it.&amp;nbsp; Testers can code hundreds of test cases like this and a test generator like an HTTP client to guide the automation.&amp;nbsp;</p>
+  <p>In addition, look at the different fuzzers available for free at <a href="http://en.wikipedia.org/wiki/Fuzz_testing">http://en.wikipedia.org/wiki/Fuzz_testing</a>.&amp;nbsp; Many of these have the capability of executing XSS test cases and help in uncovering vulnerabilities.</p>
+  <h1>Conclusions</h1>
+  <p>Testing for XSS bugs is not complicated but you need to be thorough.&amp;nbsp; It is important that you go through all the places where your web server renders HTML output.&amp;nbsp; There are many strings to try, many tags to look at, different methods to feed the test data, and even room for automation.&amp;nbsp; However, the most important thing to keep in mind is to follow your test data.&amp;nbsp; Don't just look for the alert box, but look at the code that comes back to you.&amp;nbsp; Successful XSS testing is all about knowing how to tune you test case data.</p>
+  <h1>Additional Resources&amp;nbsp;</h1>
+  <ul>
+    <li>XSS (Cross Site Scripting) Cheat Sheet.&amp;nbsp; Ha.ckers.com (<a href="http://ha.ckers.org/xss.html">http://ha.ckers.org/xss.html</a>)</li>
+    <li>Testing Your Web Applications for Cross-Site Scripting Vulnerabilities, Chris Weber. <a href="http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx">http://www.microsoft.com/technet/community/columns/secmvp/sv0505.mspx</a>&amp;nbsp;</li>
+    <li>OWASP Testing Guide Appendix C: Fuzz Vectors. <a href="http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors">http://www.owasp.org/index.php/OWASP_Testing_Guide_Appendix_C:_Fuzz_Vectors</a></li>
+    <li>&amp;nbsp;Fuzz Testing.&amp;nbsp; Wikipedia. <a href="http://en.wikipedia.org/wiki/Fuzz_testing">http://en.wikipedia.org/wiki/Fuzz_testing</a>&amp;nbsp;</li>
+  </ul>
+  <h1>Related Items</h1>
+  <div>
+    <ul>
+      <li>
+        <div>&amp;nbsp;<a href="/article/ec178496-024d-4b3c-8381-8db94767e539">Attack: Cross Site Scripting Attack</a></div>
+      </li>
+    </ul>
+  </div>]]></Data>
   </Content>
 </TeamMentor_Article>
