@@ -18,15 +18,6 @@ If you want to run TeamMentor locally, just double click on the 'start webserver
 If you want to run TeamMentor from IIS, please follow the instructions at http://docs.teammentor.securityinnovation.com
 
 
-DEFAULT ACCOUNTS
-
-There are 3 accounts preconfigured in this version:
-
- * admin  : o-123456
- * editor : o-12345 
- * reader : o-1234
-
-
 GITHUB AND FORKS
 
 The latest version of this TeamMentor instance can be found at: https://github.com/TeamMentor-OWASP/Master
@@ -40,4 +31,4 @@ If you have Git installed on the target computer/vm, it is strongly advised that
 
 TEST SERVER
 
-If you want to see this version in action, you can see it at http://owasp.teammentor.net (or at http://50.18.82.146:8081)
+If you want to see this version in action, you can see it at http://owasp.teammentor.net
