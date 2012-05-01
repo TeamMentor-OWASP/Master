@@ -64,10 +64,16 @@ namespace SecurityInnovation.TeamMentor.WebClient
 			{					
 			    //return TMConfig.Location.load<TMConfig>() ?? new TMConfig();                
 				if (_current.isNull())
-					_current =  TMConfig.Location.load<TMConfig>();
+					loadConfig();
 				return _current;
 			}
 		}
+
+        public static TMConfig loadConfig()
+        { 
+            _current =  TMConfig.Location.load<TMConfig>();
+            return _current;
+        }
 
         private TMConfig ensureDefaultValues()
         {
