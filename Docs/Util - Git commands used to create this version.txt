@@ -1,0 +1,26 @@
+- create a repository in a folder and open a git bash on it
+
+git init
+git remote add tm_master  https://github.com/TeamMentor/Master
+git remote add tm_library https://github.com/TeamMentor-OWASP/Library_OWASP
+git remote add origin git@github.com:TeamMentor-OWASP/Master.git
+git pull origin master  
+git branch -m master TeamMentor_3_1
+git checkout --orphan master
+git rm -rf .
+git pull tm_master master:master
+git fetch tm_library
+git merge -s ours --no-commit tm_library/master
+git read-tree --prefix=Library_Data/XmlDatabase/TM_Libraries/ -u tm_library/master
+git commit -m 'adding Library files'
+
+
+- test by switching between TM versions
+
+git checkout -f TeamMentor_3_1
+git checkout -f master
+
+- push changes to 
+
+git push -f origin master:master
+git push -f origin TeamMentor_3_1:TeamMentor_3_1
