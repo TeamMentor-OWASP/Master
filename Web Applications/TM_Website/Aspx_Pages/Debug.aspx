@@ -4,7 +4,8 @@
 <%@ Import Namespace ="SecurityInnovation.TeamMentor.WebClient.WebServices" %>
 
 <%	
-	var tmWebServices = new TM_WebServices();
+	var tmWebServices = new TM_WebServices();	
+	tmWebServices.tmAuthentication.mapUserRoles(true);
 	if (tmWebServices.RBAC_IsAdmin().isFalse())
 	{
 		Trace.IsEnabled = false;			//disable tracing or it will still show on the page
